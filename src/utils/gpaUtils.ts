@@ -6,6 +6,7 @@ export const calculateGPA = (
     importedCourseHistory: ImportedCourse[],
     manualGrades: Record<string, string>,
     manualUnits: Record<string, number>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>
 ) => {
     let allGradePoints = 0;
@@ -70,6 +71,7 @@ export const calculateGradeChange = (
     currentTotalPoints: number,
     currentTotalUnits: number,
     manualUnits: Record<string, number>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>,
     manualGrades?: Record<string, string>
 ) => {

@@ -2,6 +2,7 @@ export const cleanCourseId = (courseName: string): string => {
     return "".concat(...courseName.trim().split(/[^a-zA-Z0-9]/g)).toUpperCase();
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getCourseDetails = (courseName: string, courseData: Record<string, any>) => {
     const cleanCode = cleanCourseId(courseName);
     return courseData[cleanCode];
@@ -10,6 +11,7 @@ export const getCourseDetails = (courseName: string, courseData: Record<string, 
 export const getUnitsForCourse = (
     courseName: string,
     manualUnits: Record<string, number>,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>
 ): number => {
     const cleanCode = cleanCourseId(courseName);

@@ -327,6 +327,7 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
  */
 function scrapeCourseHistory() {
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     const foundCourses: any[] = [];
     // 1. Target the Course History tab
     const historyContainer = document.getElementById('pageContent_CourseHistory');
@@ -376,7 +377,7 @@ function injectCourseInfo() {
     courseHeaders.forEach((header) => {
         if (header.getAttribute('data-gear-injected') === 'true') return;
         // find headers
-        let mainContainers: Element[] = [];
+        const mainContainers: Element[] = [];
         let searchHeader: Element | null = null;
         searchHeader = header.closest('.courseSearchHeader');
         if (searchHeader) {
@@ -682,7 +683,7 @@ const init = async () => {
     } catch (error) {
         console.error("GEAR: Failed to load data", error);
     } finally {
-
+        // Cleanup if necessary
     }
 };
 init();

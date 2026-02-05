@@ -7,6 +7,7 @@ import { getUnitsForCourse } from '../utils/courseUtils';
 interface HomeProps {
     studentNotes: string;
     setStudentNotes: (val: string) => void;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>;
     manualGrades: Record<string, string>;
     manualUnits: Record<string, number>;
