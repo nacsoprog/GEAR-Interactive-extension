@@ -70,17 +70,6 @@ While currently optimized for engineering majors, GEAR Interactive includes a "M
     - Click **Load unpacked**.
     - Select the `dist` folder created in the previous step.
 
-### Important Note on Data
-
-The file `public/courses_master.json` is git-ignored to prevent bloating the repository. This file contains the scraped course catalog data.
-
-- If you are building, ensure you have a valid `courses_master.json` in the `public/` directory (or `dist/` after build).
-- **Mock Data**: You can generate a small mock dataset for testing by running:
-
-```bash
-npm run mock:data
-```
-
 ### Screenshots
 
 Visual assets are located in the `screenshots/` directory. Please add new screenshots there when submitting UI changes.
