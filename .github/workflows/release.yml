@@ -32,7 +32,10 @@ jobs:
                   npm install -g crx3
                   echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
                   # Generate CRX using the traditional RSA key
-                  crx3 -p private_key.pem -o gear-interactive.crx dist/
+                  # cd into dist to ensure root of CRX is the content of dist
+                  cd dist
+                  crx3 -p ../private_key.pem -o ../gear-interactive.crx .
+                  cd ..
                   rm private_key.pem
 
             - name: Create GitHub Release
