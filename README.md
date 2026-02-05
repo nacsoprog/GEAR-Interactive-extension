@@ -70,6 +70,16 @@ While currently optimized for engineering majors, GEAR Interactive includes a "M
     - Click **Load unpacked**.
     - Select the `dist` folder created in the previous step.
 
+5. **Package for Release (.crx)**
+
+    To generate a signed `.crx` file for manual distribution or upload:
+
+    ```bash
+    npm run crx
+    ```
+
+    This command builds the project and saves the signed extension file to the parent directory (`../GEAR-Project/`).
+
 ### Important Note on Data
 
 The file `public/courses_master.json` is git-ignored to prevent bloating the repository. This file contains the scraped course catalog data.
