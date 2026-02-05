@@ -7,6 +7,9 @@ While currently optimized for engineering majors, GEAR Interactive includes a "M
 ---
 
 [![Google Form for feedback:](https://img.shields.io/badge/Feedback-Google_Form-blue?style=for-the-badge&logo=googleforms)](https://docs.google.com/forms/d/e/1FAIpQLSd_1g-EkIGq2Sca-fnsjkoDQ0gIm9k_dsRwc62bCCLcvaa71A/viewform?usp=header)
+![Build Status](https://img.shields.io/github/actions/workflow/status/nacsoprog/GEAR-Interactive-extension/lint.yml?branch=main&label=lint)
+![Release Status](https://img.shields.io/github/v/release/nacsoprog/GEAR-Interactive-extension?label=latest%20version)
+![License](https://img.shields.io/github/license/nacsoprog/GEAR-Interactive-extension)
 
 ## Key Features
 
