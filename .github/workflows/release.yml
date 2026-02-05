@@ -29,7 +29,8 @@ jobs:
 
             - name: Create Signed CRX
               run: |
-                  npm install -g crx3
+                  # Generate CRX using Chrome CLI (Native Packing)
+                  # This avoids node-library inconsistencies
                   echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
                   # Generate CRX using the traditional RSA key
                   # cd into dist to ensure root of CRX is the content of dist
