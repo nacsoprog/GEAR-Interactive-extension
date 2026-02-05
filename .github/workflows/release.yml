@@ -35,7 +35,7 @@ jobs:
                   # Generate CRX using the traditional RSA key
                   # cd into dist to ensure root of CRX is the content of dist
                   cd dist
-                  crx3 -p ../private_key.pem -o ../gear-interactive.crx .
+                  npx crx3 -p ../private_key.pem -o ../gear-interactive.crx .
                   cd ..
                   rm private_key.pem
 
