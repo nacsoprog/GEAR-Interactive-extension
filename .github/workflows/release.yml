@@ -27,15 +27,20 @@ jobs:
             - name: Build Extension
               run: npm run build
 
-            - name: Zip the Build
-              run: cd dist && zip -r ../gear-interactive.zip .
+            - name: Create Signed CRX
+              run: |
+                  npm install -g crx3
+                  echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
+                  # This creates the gear-interactive.crx file
+                  crx3 -p private_key.pem -o gear-interactive.crx dist/
+                  rm private_key.pem
 
             - name: Create GitHub Release
               if: startsWith(github.ref, 'refs/tags/')
               uses: softprops/action-gh-release@v2
               with:
-                  files: gear-interactive.zip
-                  body: "Verified Production Release (ZIP) ${{ github.ref_name }}"
+                  files: gear-interactive.crx
+                  body: "Verified Production Release (CRX Signed) ${{ github.ref_name }}"
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -43,7 +48,8 @@ jobs:
               if: startsWith(github.ref, 'refs/tags/')
               uses: mnao305/chrome-extension-upload@v5.0.0
               with:
-                  file-path: gear-interactive.zip
+                  # We point directly to the .crx we just made
+                  file-path: gear-interactive.crx
                   extension-id: ${{ secrets.EXTENSION_ID }}
                   client-id: ${{ secrets.CLIENT_ID }}
                   client-secret: ${{ secrets.CLIENT_SECRET }}
