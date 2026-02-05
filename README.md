@@ -1,30 +1,35 @@
 # GEAR Interactive
 
-**GEAR Interactive** is a Chrome Extension designed to facilitate the academic planning for UCSB engineering students. It integrates with UCSB **GOLD** to provide an interactive course audit. Basically it just makes GOLD easier to use. It is working alright for its limited engineering scope but hopefully it can be expanded to be useful for more students. I hope this tool is far from finished.
+**GEAR Interactive** is a Chrome Extension designed to streamline academic planning for UCSB engineering students. It integrates seamlessly with **UCSB GOLD** to provide an interactive course audit, simplified visualization of degree requirements, and intelligent course search capabilities.
+
+While currently optimized for engineering majors, GEAR Interactive includes a "Major not listed" feature to provide value for all UCSB students.
 
 ---
 
-## Features to note
+## Key Features
 
-### Interactive Degree Checklist
+### nteractive Degree Checklist
 
-- **Visual Tracking**: See major requirements (GEs, Major Prep, Upper Divs) in a checklist.
-- **Live Progress**: Calculate unit totals and check off requirements as you add courses.
-- **High School Credits**: Track AP / IB / A-Level credits that satisfy specific university requirements.
+- **Visual Tracking**: View major requirements (GEs, Major Prep, Upper Divs) in a clean, categorized checklist.
+- **Live Progress**: Automatically calculates unit totals and tracks fulfillment as you add courses.
+- **High School Credits**: Intelligently maps AP / IB / A-Level scores to specific university requirements (Course Credits & GE Areas).
+- **Supports All Majors**: Specialized tracking for Engineering majors (CS, CE, EE, ME, ChemE) and a generic "Course History" view for all other majors.
 
 ### GOLD Integration
 
-- **GOLD Import**: One-click import of course history directly from GOLD. (limited testing)
-- **Automated Search**: Click a requirement (e.g., "Area D") in the sidebar, and GEAR will automatically open GOLD and set up the search filters for you (including resetting interfering subject filters).
-- **Course Info Injection**: Adds "PLAT" links and color-coded availability (Red/Green) directly into GOLD's search results.
+- **One-Click Import**: Instantly import your entire course history directly from GOLD.
+- **Smart Search**: Click any requirement (e.g., "Area D") to automatically open GOLD searches with the correct filters pre-applied.
+- **Enhanced UI**: Injects "PLAT" (Course Difficulty) links and availability indicators directly into GOLD search results.
 
-### Terminal-Style Input
+### Dashboard Home
 
-- **Input Navigation**: Use the **Up/Down Arrow Keys** in the input box to cycle through your recent course additions, just like a terminal. Automatically ignores duplicate entries and keeps your history clean (Max 15 items).
+- **What-If GPA Sandbox**: Simulate future grades and "In Progress" courses to see their impact on your GPA without affecting official records.
+- **Student Notes**: A persistent scratchpad for academic planning thoughts.
+- **Dark Mode**: Fully themed experience for late-night planning sessions.
 
 ---
 
-## Set up for development
+## Development Setup
 
 ### Prerequisites
 
@@ -52,26 +57,32 @@
     npm run build
     ```
 
-    *npm run dev doesnt work too well with this... generate the production-ready extension in the `dist/` folder.*
+    *Note: `npm run dev` is not recommended for full extension testing due to Chrome API limitations in dev mode. Use `npm run build` to generate the production-ready extension in the `dist/` folder.*
 
 4. **Load into Chrome**
-    - Open Chrome and go to `chrome://extensions`.
+    - Open Chrome and navigate to `chrome://extensions`.
     - Enable **Developer mode** (top right toggle).
     - Click **Load unpacked**.
     - Select the `dist` folder created in the previous step.
+
+### Important Note on Data
+
+The file `public/courses_master.json` is git-ignored to prevent bloating the repository. This file contains the scraped course catalog data.
+
+- If you are building, ensure you have a valid `courses_master.json` in the `public/` directory (or `dist/` after build).
 
 ---
 
 ## Tech Stack
 
 - **Frontend**: React 19, TypeScript
-- **Build Tool**: Vite (with CRXJS plugin for Chrome Extension support)
-- **Styling**: Vanilla CSS (Modular & Responsive)
+- **Build Tool**: Vite (with CRXJS plugin)
+- **Styling**: Vanilla CSS (Modular & Themed)
 - **Linting**: ESLint + TypeScript-ESLint
 
 ## Contributing
 
-This could expand into far more use cases (adding other majors/minors, recommended scheduling, etc.)
+We welcome contributions to expand GEAR Interactive to support more majors, minors, and features!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
