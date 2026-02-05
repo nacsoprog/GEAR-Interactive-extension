@@ -1,0 +1,159 @@
+/* --- Dark Mode Checklist Overrides --- */
+
+body.dark-mode .checklist li.nested-section {
+    background-color: #1e1e1e !important;
+    border: 1px solid #000000 !important;
+    /* Dark borders */
+    border-bottom-color: #000000 !important;
+    border-bottom-width: 2px !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .parent-check {
+    color: #90caf9 !important;
+}
+
+body.dark-mode .parent-check strong,
+body.dark-mode .parent-check .toggle-icon {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .parent-check label span {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .toggle-icon {
+    color: #aaa !important;
+}
+
+/* Checklist Items */
+body.dark-mode .nested-list {
+    border-top-color: #000000 !important;
+}
+
+body.dark-mode .nested-list li,
+body.dark-mode .group-container {
+    background-color: #2c2c2c !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .nested-list li label {
+    color: #e0e0e0 !important;
+}
+
+/* Notes */
+body.dark-mode .nested-list li.note {
+    background-color: #1e1e1e !important;
+}
+
+body.dark-mode .note-content-detailed,
+body.dark-mode .note-content-detailed-simple {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .note-header {
+    color: #bb86fc !important;
+}
+
+/* Helper Text */
+body.dark-mode .course-units,
+body.dark-mode .prereq-toggle,
+body.dark-mode .sub-req-detail {
+    color: #bb86fc !important;
+}
+
+/* Switch Area Select */
+body.dark-mode .switch-area-select {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Links & Badges */
+body.dark-mode .course-link:hover,
+body.dark-mode .ge-clickable:hover {
+    color: #00e5ff !important;
+    text-shadow: 0 0 5px rgba(0, 229, 255, 0.4);
+}
+
+body.dark-mode .more-link {
+    color: #40c4ff !important;
+}
+
+body.dark-mode .credit-source {
+    background-color: #1a3b5c !important;
+    color: #90caf9 !important;
+}
+
+body.dark-mode .credit-source-GOLD {
+    background-color: #4a3b00 !important;
+    color: #ffd54f !important;
+}
+
+body.dark-mode .courses-HS {
+    background-color: #1b4d2e !important;
+    color: #a5d6a7 !important;
+}
+
+/* Action Bubbles */
+body.dark-mode .remove-course-btn,
+body.dark-mode .restore-course-btn {
+    background-color: #2d2d2d !important;
+    color: #bb86fc !important;
+    border: 1px solid #444 !important;
+}
+
+body.dark-mode .remove-course-btn:hover,
+body.dark-mode .restore-course-btn:hover {
+    background-color: #444 !important;
+    color: #d1c4e9 !important;
+}
+
+/* Unfulfilled */
+body.dark-mode .unfulfilled-container {
+    background-color: #1e1e1e !important;
+    border-color: #333 !important;
+}
+
+body.dark-mode .unfulfilled-header {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .unfulfilled-item {
+    background-color: #1a3b5c !important;
+    color: #90caf9 !important;
+    border-color: #1565c0 !important;
+}
+
+body.dark-mode .unfulfilled-item:hover {
+    background-color: #444 !important;
+    border-color: #d1c4e9 !important;
+}
+
+/* Legend */
+body.dark-mode .checklist-legend {
+    background-color: #1e1e1e !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Credit Transfer Checklist Dark Mode Overrides */
+body.dark-mode .checklist-item.checked {
+    border-color: #bb86fc !important;
+}
+
+body.dark-mode .checklist-item.checked label {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .checklist-item input[type="checkbox"] {
+    accent-color: #bb86fc !important;
+}
+
+body.dark-mode .generic-course-details {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .generic-course-details strong {
+    color: #bb86fc !important;
+}

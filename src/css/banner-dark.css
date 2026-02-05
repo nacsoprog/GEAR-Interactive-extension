@@ -1,0 +1,68 @@
+/* --- Dark Mode Banner Overrides --- */
+
+body.dark-mode .app-navbar {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    border-bottom: 1px solid #333;
+}
+
+body.dark-mode .nav-item.active {
+    border-bottom-color: #bb86fc;
+    color: #bb86fc;
+}
+
+/* Dark Mode Dropdown */
+body.dark-mode .major-dropdown {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .major-option {
+    background-color: #2d2d2d;
+    border-bottom-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-mode .major-option.selected {
+    background-color: #3a3a3a;
+    color: #bb86fc;
+}
+
+body.dark-mode .major-option:hover {
+    background-color: #444;
+}
+
+/* Banner Tools Dropdown */
+body.dark-mode .banner-tools-dropdown {
+    background-color: #1e1e1e !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+    box-shadow: -2px 2px 5px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .banner-tool-item {
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+body.dark-mode .banner-tool-item:hover {
+    background-color: #333 !important;
+    color: #bb86fc !important;
+}
+
+/* Hamburger Toggle */
+body.dark-mode .banner-arrow-toggle {
+    background-color: #bb86fc !important;
+    border-color: #444 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .banner-arrow-toggle:hover {
+    background-color: #333 !important;
+}
+
+body.dark-mode .hamburger-line {
+    background-color: #202020 !important;
+}

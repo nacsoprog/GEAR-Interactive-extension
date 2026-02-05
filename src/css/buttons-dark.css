@@ -1,0 +1,84 @@
+/* --- Dark Mode Button Overrides --- */
+
+body.dark-mode .nav-button {
+    background-color: #2c2c2c;
+    border: 1px solid #555;
+    color: #e0e0e0;
+}
+
+body.dark-mode .nav-button:hover {
+    background-color: #383838;
+}
+
+body.dark-mode .nav-button.secondary {
+    background-color: #000000 !important;
+    color: #bb86fc !important;
+    border: 1px solid #bb86fc !important;
+}
+
+body.dark-mode .nav-button.danger {
+    background-color: transparent !important;
+    color: #d43d3d !important;
+    border: 1px solid #d43d3d !important;
+}
+
+body.dark-mode .nav-button.danger:hover {
+    background-color: rgba(255, 82, 82, 0.1) !important;
+}
+
+body.dark-mode .nav-button.add-course-btn {
+    color: #4db985 !important;
+    border: 1px solid #4db985 !important;
+    background-color: transparent !important;
+}
+
+body.dark-mode .nav-button.add-course-btn:hover {
+    background-color: rgba(105, 240, 174, 0.1) !important;
+    box-shadow: 0 0 8px rgba(105, 240, 174, 0.2) !important;
+}
+
+body.dark-mode .info-btn {
+    background-color: transparent !important;
+    color: #00e5ff37 !important;
+    border: 1px solid #00e5ff37 !important;
+}
+
+body.dark-mode .info-btn:hover,
+body.dark-mode button.nav-button.secondary.info-btn:hover {
+    background-color: rgba(255, 255, 255, 0.122) !important;
+    color: #e0e0e0 !important;
+}
+
+/* Info Button - Max Specificity Override if needed */
+body.dark-mode button.nav-button.secondary.info-btn {
+    color: #bababa !important;
+    border-color: #bababa !important;
+    background-color: transparent !important;
+}
+
+body.dark-mode .reload-btn {
+    color: #69f0ae !important;
+}
+
+body.dark-mode .reload-icon {
+    color: #69f0ae !important;
+}
+
+body.dark-mode .nav-button.reload-btn:hover {
+    background-color: rgba(251, 0, 239, 0.1) !important;
+}
+
+body.dark-mode .reload-btn:hover .reload-icon {
+    color: #b9f6ca !important;
+}
+
+/* Reset Inputs Button: Dark Grey BG + Orange Border/Text */
+body.dark-mode .reset-inputs-btn {
+    background-color: #0f0f0f !important;
+    color: #ffab40 !important;
+    border: 1px solid #ffab40 !important;
+}
+
+body.dark-mode .reset-inputs-btn:hover {
+    background-color: #444 !important;
+}

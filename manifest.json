@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "GEAR Interactive",
+  "version": "1.2.0",
+  "description": "Side panel degree tracker with GOLD integration for UCSB students.",
+  "action": {
+    "default_title": "Open GEAR Interactive",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://my.sa.ucsb.edu/gold/*"
+      ],
+      "js": [
+        "src/content/index.ts"
+      ]
+    }
+  ],
+  "permissions": [
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://my.sa.ucsb.edu/*",
+    "*://ucsbplat.com/*",
+    "*://www.ucsbplat.com/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "courses_master.json"
+      ],
+      "matches": [
+        "https://my.sa.ucsb.edu/*"
+      ]
+    }
+  ]
+}

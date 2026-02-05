@@ -1,0 +1,364 @@
+/* --- Global Dark Mode Overrides --- */
+
+body.dark-mode {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+    background-image: url('../assets/moon.png');
+    background-position: left -70px bottom -85px !important;
+}
+
+body.dark-mode .page-container {
+    background-color: transparent !important;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4 {
+    color: #bb86fc !important;
+}
+
+body.dark-mode h3 span {
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode a {
+    color: #bb86fc !important;
+}
+
+/* Forms */
+body.dark-mode input[type="text"],
+body.dark-mode select,
+body.dark-mode textarea {
+    background-color: #2d2d2d !important;
+    color: #fff !important;
+    border: 1px solid #555 !important;
+}
+
+body.dark-mode input[type="text"]:focus {
+    border-color: #bb86fc !important;
+    box-shadow: 0 0 0 2px rgba(187, 134, 252, 0.2) !important;
+}
+
+body.dark-mode .manual-input::placeholder {
+    color: #bb86fc !important;
+    opacity: 1;
+}
+
+/* Custom Checkboxes */
+body.dark-mode input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #2c2c2c;
+    border: 1px solid #555;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+body.dark-mode input[type="checkbox"]:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bb86fc' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-color: #777;
+}
+
+/* Modals & Overlays */
+body.dark-mode .modal,
+body.dark-mode .course-info-box {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .course-info-box h3 {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .course-info-box {
+    color: #ccc !important;
+}
+
+body.dark-mode .instructions-bubble,
+body.dark-mode .instructions-bubble.expanded {
+    background-color: #1e1e1e !important;
+    color: #e0e0e0 !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .instructions-bubble.collapsed {
+    background-color: #1e1e1e !important;
+    border-color: #bb86fc !important;
+    color: #bb86fc !important;
+}
+
+body.dark-mode .close-btn {
+    color: #aaa !important;
+}
+
+body.dark-mode .close-btn:hover {
+    color: #fff !important;
+}
+
+/* Flash Messages */
+body.dark-mode .flash-message {
+    background-color: #2d2d2d !important;
+    color: #ff5252 !important;
+    border-color: #ff5252 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Typography Overrides */
+body.dark-mode .main-title {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .instructions,
+body.dark-mode .sub-instruction,
+body.dark-mode .reset-options-list {
+    color: #b0b0b0 !important;
+}
+
+body.dark-mode .reset-options-list strong {
+    color: #fff !important;
+}
+
+/* Dashboard Overrides */
+body.dark-mode .card {
+    background-color: #1e1e1e !important;
+    box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid #333 !important;
+}
+
+body.dark-mode .card div[style*="background-color: #f9f9f9"],
+body.dark-mode .card div[style*="backgroundColor: #f9f9f9"],
+body.dark-mode .card div[style*="background-color: #f0f7ff"],
+body.dark-mode .card div[style*="backgroundColor: #f0f7ff"] {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+    color: #e0e0e0 !important;
+}
+
+body.dark-mode .card div[style*="color: #666"],
+body.dark-mode .card div[style*="color: #555"],
+body.dark-mode .card div[style*="color: #003660"],
+body.dark-mode .card p[style*="color: #777"] {
+    color: #b0b0b0 !important;
+}
+
+body.dark-mode .gpa-text {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .dashboard-section-title {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .fun-label {
+    background-color: #1e1e1e !important;
+    color: #bb86fc !important;
+    border: 1px solid #bb86fc !important;
+}
+
+body.dark-mode .gpa-label {
+    color: #aaa !important;
+}
+
+body.dark-mode .gpa-value {
+    color: #fff;
+}
+
+/* Simulated Courses (Dashboard) */
+body.dark-mode .sim-course-item {
+    background-color: #1e1e1e !important;
+    border-color: #555 !important;
+}
+
+body.dark-mode .sim-course-code {
+    color: #bb86fc !important;
+}
+
+body.dark-mode .sim-course-item select {
+    background-color: #181818 !important;
+    color: #fff !important;
+    border-color: #666 !important;
+}
+
+/* Time Slider Overrides */
+body.dark-mode .slider-track {
+    background-color: #000000 !important;
+}
+
+body.dark-mode .slider-range {
+    background-color: #292929 !important;
+}
+
+body.dark-mode .slider-thumb-left,
+body.dark-mode .slider-thumb-right {
+    background-color: #bb86fc !important;
+    box-shadow: 0 0 5px rgba(217, 0, 255, 0.4);
+}
+
+body.dark-mode .time-labels {
+    color: #bb86fc !important;
+}
+
+/* Resource Links Overrides */
+body.dark-mode .resource-link {
+    color: #b0b0b0;
+}
+
+body.dark-mode .resource-link:hover {
+    background-color: rgba(187, 134, 252, 0.15) !important;
+    border-color: rgba(187, 134, 252, 0.3) !important;
+    color: #bb86fc !important;
+}
+
+/* Filter Items */
+body.dark-mode .filter-item {
+    background-color: #2c2c2c !important;
+    border-color: #444 !important;
+}
+
+body.dark-mode .filter-item:hover {
+    background-color: #383838 !important;
+    border-color: #666 !important;
+}
+
+body.dark-mode .filter-item label {
+    color: #e0e0e0 !important;
+}
+
+/* Failing Grades */
+body.dark-mode .failing-grade {
+    background-color: #4a0000 !important;
+    border-color: #7f0000 !important;
+    color: #ef5350 !important;
+}
+
+/* Stars (Dark Mode Only) */
+/* Furthest left star */
+body.dark-mode::before {
+    content: "";
+    position: fixed;
+    top: 81.5vh;
+    left: 5vw;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 3px 1px white;
+    animation: twinkle 21s infinite linear;
+}
+
+/* Furthest down star (biggest star) */
+body.dark-mode::after {
+    content: "";
+    position: fixed;
+    top: 97vh;
+    left: 25vw;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 2px 1px white;
+    animation: twinkle 8.5s infinite linear;
+}
+
+/* Second furthest down star */
+body.dark-mode #root::before {
+    content: "";
+    position: fixed;
+    top: 94vh;
+    left: 55vw;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 4px 1px white;
+    animation: twinkle 16s infinite linear;
+}
+
+/* Furthest right star */
+body.dark-mode #root::after {
+    content: "";
+    position: fixed;
+    top: 84vh;
+    left: 90vw;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 2px 0px white;
+    animation: twinkle 10s infinite linear;
+}
+
+/* Second furthest right star (smallest star) */
+body.dark-mode .main-content::before {
+    content: "";
+    position: fixed;
+    top: 97vh;
+    left: 85vw;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 5px 1px white;
+    animation: twinkle 19s infinite linear;
+}
+
+/* Second furthest left star */
+body.dark-mode .main-content::after {
+    content: "";
+    position: fixed;
+    top: 85vh;
+    left: 15vw;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    z-index: -1;
+    opacity: 0.8;
+    pointer-events: none;
+    box-shadow: 0 0 3px 1px white;
+    animation: twinkle 13s infinite linear;
+}
+
+/* --- Manual Input Label Override --- */
+body.dark-mode .manual-label {
+    color: #bb86fc !important;
+}
+
+/* --- Stats Overlay (Legend/GPA Box) --- */
+body.dark-mode .stats-overlay {
+    background-color: #1e1e1e !important;
+    border-color: #444 !important;
+    color: #bb86fc !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-mode .checklist-header {
+    color: #bb86fc !important;
+}
+
+/* Section Label Dark Mode Override */
+body.dark-mode .section-label {
+    color: #bb86fc !important;
+}

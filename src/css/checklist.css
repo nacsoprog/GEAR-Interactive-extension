@@ -1,0 +1,369 @@
+/* --- Checklist Container --- */
+.checklist {
+    list-style-type: none;
+    padding: 0;
+    min-height: 0;
+}
+
+.main-checklist {
+    display: block;
+}
+
+.checklist input[type="checkbox"]:checked+label {
+    color: #888;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.checklist input[type="checkbox"]:checked+label span {
+    opacity: 0.7;
+}
+
+/* Parent Section Card */
+.checklist li.nested-section {
+    display: block;
+    background-color: #f8f8f8;
+    padding: 6px;
+    border: 1px solid #e0e0e0;
+    height: fit-content;
+    box-sizing: border-box;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Header for Sections (Area D, etc.) */
+.parent-check {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 0;
+    padding: 0;
+    color: #003660;
+    font-size: 0.85rem;
+}
+
+.parent-check input[type="checkbox"] {
+    margin-right: 6px;
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}
+
+/* Toggle Arrow */
+.toggle-icon {
+    cursor: pointer;
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    margin-right: 4px;
+    color: #666;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+/* Nested List (Children) */
+.nested-list {
+    list-style-type: none;
+    padding-left: 28px;
+    margin-top: 6px;
+    border-top: 1px solid #eee;
+    padding-top: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.nested-list li {
+    width: calc(50% - 4px);
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0;
+    background-color: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    box-sizing: border-box;
+    height: auto;
+}
+
+.nested-list li input[type="checkbox"] {
+    margin-right: 6px;
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.nested-list li label {
+    font-size: 0.7rem;
+    line-height: 1.2;
+    word-break: break-word;
+}
+
+/* Group Items (Chem Series, etc.) */
+.nested-list li.group-container {
+    margin-bottom: 0;
+    padding: 6px;
+    background-color: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.group-container input[type="checkbox"]:checked+label {
+    color: #888;
+}
+
+/* Notes */
+.nested-list li.note {
+    width: 100%;
+    grid-column: 1 / -1;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 4px !important;
+    margin-bottom: 4px !important;
+    font-style: italic;
+    color: #666;
+    font-size: 0.75rem !important;
+    white-space: normal;
+}
+
+.note-content-detailed,
+.note-content-detailed-simple {
+    font-size: 0.8em;
+    color: #555;
+    display: block;
+}
+
+.note-content-detailed {
+    padding-left: 15px;
+}
+
+.note-header {
+    cursor: pointer;
+    color: #004071;
+    font-weight: bold;
+    margin-bottom: 0px;
+    user-select: none;
+}
+
+.sub-req-detail {
+    font-size: 0.8em;
+    color: #555;
+}
+
+.course-units {
+    font-size: 0.8em;
+    color: #555;
+}
+
+.prereq-toggle {
+    cursor: pointer;
+    color: #003660;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+/* Switch Area Select */
+.switch-area-select {
+    width: fit-content;
+    margin-left: 8px;
+    font-size: 0.7em;
+    padding: 1px 4px;
+    border-radius: 4px;
+    border: 1px solid #a4c9ff;
+    background-color: #f5fcfe;
+    cursor: pointer;
+    color: #333;
+}
+
+/* --- Badges --- */
+.credit-source {
+    font-size: 0.75em;
+    color: #003660;
+    font-weight: 700;
+    margin-left: 4px;
+    background-color: #e6f0ff;
+    padding: 1px 4px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.credit-source-GOLD {
+    font-size: 0.75em;
+    color: #604600;
+    font-weight: 700;
+    margin-left: 4px;
+    background-color: #fff9e6;
+    padding: 1px 4px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.courses-HS {
+    font-size: 0.75em;
+    color: #11491e;
+    font-weight: 700;
+    margin-left: 4px;
+    background-color: #e9fced;
+    padding: 1px 4px;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+/* Links */
+.course-link {
+    text-decoration: none;
+    transition: color 0.1s;
+    position: relative;
+}
+
+.course-link:hover {
+    text-decoration: underline;
+    color: #0071b2 !important;
+}
+
+.ge-clickable {
+    cursor: pointer;
+    transition: color 0.1s;
+}
+
+.ge-clickable:hover {
+    color: #0071b2 !important;
+    text-decoration: underline;
+}
+
+.course-link:hover::after {
+    content: "View course info";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: auto;
+    transform: none;
+    background-color: rgba(226, 226, 226, 1);
+    color: rgb(20, 20, 20, 1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-top: 4px;
+    pointer-events: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    animation: fadeIn 0s linear 1.1s forwards;
+}
+
+.more-link {
+    color: #0d47a1;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 4px;
+}
+
+/* Remove/Restore Buttons (Action Bubbles) */
+.remove-course-btn {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 7px;
+    font-weight: bold;
+    color: #888;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    transition: all 0.2s;
+}
+
+.remove-course-btn:hover {
+    background-color: #eee;
+    color: #555;
+    border-color: #bbb;
+}
+
+.restore-course-btn {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 7px;
+    font-weight: bold;
+    color: #888;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    transition: all 0.2s;
+}
+
+.restore-course-btn:hover {
+    background-color: #eee;
+    color: #555;
+    border-color: #bbb;
+}
+
+/* Unfulfilled Requirements Styling */
+.unfulfilled-container {
+    padding: 7px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #e9ecef;
+}
+
+.unfulfilled-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.unfulfilled-item {
+    background-color: #e3f2fd;
+    color: #0d47a1;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85em;
+    border: 1px solid #bbdefb;
+    cursor: pointer;
+}
+
+/* Legend */
+.checklist-legend {
+    margin-top: 20px;
+    margin-bottom: 70px;
+    font-size: 0.8rem;
+    color: #555;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+    width: fit-content;
+    background-color: #fff;
+}
+
+/* --- Generic View Styles --- */
+.generic-course-details {
+    margin-top: 7px;
+    font-size: 0.7em;
+    color: #555;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}

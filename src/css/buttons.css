@@ -1,0 +1,73 @@
+/* --- Navigation Buttons --- */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.nav-button {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #003660;
+    color: white;
+    transition: background-color 0.2s ease;
+    flex: 1;
+}
+
+.nav-button.secondary {
+    background-color: #e2edfb;
+    color: #264877;
+}
+
+.nav-button.danger {
+    background-color: #facac8;
+    color: rgb(114, 16, 16);
+}
+
+.nav-button.small-reset {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    width: auto;
+    flex: 0;
+    max-height: auto;
+}
+
+/* Add Course Button */
+.add-course-btn {
+    color: #1d6f21 !important;
+    background-color: #ceefd0 !important;
+}
+
+.add-course-btn:hover {
+    background-color: rgba(46, 125, 50, 0.1) !important;
+}
+
+/* Info & Reload Buttons */
+.reload-btn {
+    color: #3b8347;
+}
+
+.reload-icon {
+    color: #3b8347;
+}
+
+.info-btn {
+    background-color: #e7e7e7;
+    color: #4b4b4b;
+}
+
+/* Reset Modal "Reset Inputs" Button */
+.reset-inputs-btn {
+    background-color: #ffeed2ff;
+    color: #a95100ff;
+    border: 1px solid transparent;
+}
+
+.reset-inputs-btn:hover {
+    background-color: #ffdcb5ff;
+}
