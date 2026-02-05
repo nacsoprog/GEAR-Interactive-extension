@@ -5,9 +5,14 @@ on:
         tags:
             - "v*"
 
+permissions:
+    contents: read
+
 jobs:
     build-and-release:
         runs-on: ubuntu-latest
+        permissions:
+            contents: write
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -25,7 +30,7 @@ jobs:
               run: npm run build
 
             - name: Zip the Build
-              run: zip -r gear-interactive-v${{ github.ref_name }}.zip dist/
+              run: cd dist && zip -r ../gear-interactive-v${{ github.ref_name }}.zip .
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2

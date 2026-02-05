@@ -63,7 +63,4 @@ const mockCourses = {
     }
 };
 
-// Write the file
-console.log(`Generating mock data to ${OUTPUT_PATH}...`);
 fs.writeFileSync(OUTPUT_PATH, JSON.stringify(mockCourses, null, 4));
-console.log("✅ Mock data generated successfully!");
