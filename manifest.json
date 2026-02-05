@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GEAR Interactive",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Side panel degree tracker with GOLD integration for UCSB students.",
   "action": {
     "default_title": "Open GEAR Interactive",
