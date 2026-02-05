@@ -14,7 +14,7 @@ Only the latest version of the extension published on the Chrome Web Store is cu
 If you discover a security vulnerability in GEAR Interactive, please report it privately. Do **NOT** open a public GitHub issue for security concerns.
 
 **How to report:**
-Contact me directly ([nacsoprog](https://github.com/nacsoprog))
+File a report under the security tab or just email <gear.interactive.help@gmail.com>
 
 ## Security Measures Implemented
 
