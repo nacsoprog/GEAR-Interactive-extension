@@ -33,10 +33,10 @@ jobs:
                   # This avoids node-library inconsistencies
                   echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
                   # Generate CRX using the traditional RSA key
-                  # cd into dist to ensure root of CRX is the content of dist
-                  cd dist
-                  npx crx3 -p ../private_key.pem -o ../gear-interactive.crx .
-                  cd ..
+                  # Debug: List contents of dist to verify manifest.json existence
+                  ls -R dist
+                  # Run crx3 from root, pointing to dist folder
+                  npx crx3 -p private_key.pem -o gear-interactive.crx dist
                   rm private_key.pem
 
             - name: Create GitHub Release
