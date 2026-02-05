@@ -6,13 +6,11 @@ on:
             - "v*"
 
 permissions:
-    contents: read
+    contents: write
 
 jobs:
     build-and-release:
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -30,12 +28,21 @@ jobs:
               run: npm run build
 
             - name: Zip the Build
-              run: cd dist && zip -r ../gear-interactive-v${{ github.ref_name }}.zip .
+              run: cd dist && zip -r ../gear-interactive.zip .
 
             - name: Create GitHub Release
               uses: softprops/action-gh-release@v2
               with:
-                  files: gear-interactive-v${{ github.ref_name }}.zip
-                  body: "Release ${{ github.ref_name }}"
+                  files: gear-interactive.zip
+                  body: "Verified Production Release ${{ github.ref_name }}"
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Upload to Chrome Web Store
+              uses: mnao305/chrome-extension-upload@v5.0.0
+              with:
+                  file-path: gear-interactive.zip
+                  extension-id: ${{ secrets.EXTENSION_ID }}
+                  client-id: ${{ secrets.CLIENT_ID }}
+                  client-secret: ${{ secrets.CLIENT_SECRET }}
+                  refresh-token: ${{ secrets.REFRESH_TOKEN }}
