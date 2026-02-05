@@ -29,13 +29,11 @@ jobs:
 
             - name: Create Signed CRX
               run: |
-                  npm install -g crx3
+                  # Generate CRX using Chrome CLI (Native Packing)
+                  # This avoids node-library inconsistencies
                   echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
-                  # Generate CRX using the traditional RSA key
-                  # cd into dist to ensure root of CRX is the content of dist
-                  cd dist
-                  crx3 -p ../private_key.pem -o ../gear-interactive.crx .
-                  cd ..
+                  google-chrome --pack-extension=dist --pack-extension-key=private_key.pem
+                  mv dist.crx gear-interactive.crx
                   rm private_key.pem
 
             - name: Create GitHub Release
