@@ -6,6 +6,8 @@ While currently optimized for engineering majors, GEAR Interactive includes a "M
 
 ---
 
+[![Google Form for feedback:](https://img.shields.io/badge/Feedback-Google_Form-blue?style=for-the-badge&logo=googleforms)](https://docs.google.com/forms/d/e/1FAIpQLSd_1g-EkIGq2Sca-fnsjkoDQ0gIm9k_dsRwc62bCCLcvaa71A/viewform?usp=header)
+
 ## Key Features
 
 ### Interactive Degree Checklist
