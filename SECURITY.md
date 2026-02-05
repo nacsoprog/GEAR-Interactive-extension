@@ -6,8 +6,8 @@ Only the latest version of the extension published on the Chrome Web Store is cu
 
 | Version | Supported          |
 | ------- | ------------------ |
-| v1.3.x  | :white_check_mark: |
-| < 1.2.0 | :x:                |
+| v1.3.x  | Yes                |
+| < 1.2.0 | No                 |
 
 ## Reporting a Vulnerability
 
@@ -38,7 +38,7 @@ To ensure the safety of UCSB students' data, GEAR Interactive implements the fol
 
 ### 4. Dependency Management
 
-- All dependencies in `package.json` are **version-pinned** (no `^` or `~`) to prevent malicious updates from auto-installing.
+- Dependencies are regularly monitored and audited for vulnerabilities.
 - `npm audit` is run before every release.
 
 ### 5. Data Privacy

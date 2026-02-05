@@ -1,16 +1,18 @@
 {
   "name": "gear_interactive",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.3.18",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "mock:data": "tsx scripts/generate_mock_data.ts"
+    "zip": "npm run build && cd dist && zip -r \"../../../gear-interactive-v$npm_package_version.zip\" .",
+    "crx": "npm run build && npx crx3 -p ~/.ssh/gear_private_key_pkcs1.pem -o \"../../gear-interactive-v$npm_package_version.crx\" dist"
   },
   "dependencies": {
+    "crx3": "^2.0.0",
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
