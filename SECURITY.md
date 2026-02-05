@@ -6,7 +6,7 @@ Only the latest version of the extension published on the Chrome Web Store is cu
 
 | Version | Supported          |
 | ------- | ------------------ |
-| v1.2.x  | :white_check_mark: |
+| v1.3.x  | :white_check_mark: |
 | < 1.2.0 | :x:                |
 
 ## Reporting a Vulnerability
