@@ -31,7 +31,7 @@ jobs:
               run: |
                   npm install -g crx3
                   echo "${{ secrets.CRX_PRIVATE_KEY }}" > private_key.pem
-                  # This creates the gear-interactive.crx file
+                  # Generate CRX using the traditional RSA key
                   crx3 -p private_key.pem -o gear-interactive.crx dist/
                   rm private_key.pem
 
@@ -48,7 +48,6 @@ jobs:
               if: startsWith(github.ref, 'refs/tags/')
               uses: mnao305/chrome-extension-upload@v5.0.0
               with:
-                  # We point directly to the .crx we just made
                   file-path: gear-interactive.crx
                   extension-id: ${{ secrets.EXTENSION_ID }}
                   client-id: ${{ secrets.CLIENT_ID }}
