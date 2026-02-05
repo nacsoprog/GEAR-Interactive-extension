@@ -8,7 +8,7 @@ While currently optimized for engineering majors, GEAR Interactive includes a "M
 
 ## Key Features
 
-### nteractive Degree Checklist
+### Interactive Degree Checklist
 
 - **Visual Tracking**: View major requirements (GEs, Major Prep, Upper Divs) in a clean, categorized checklist.
 - **Live Progress**: Automatically calculates unit totals and tracks fulfillment as you add courses.
