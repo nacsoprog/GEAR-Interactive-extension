@@ -1,5 +1,6 @@
 import React from 'react';
 import gearLogoInline from '../assets/gear_logo_inline.png';
+import gauchoIcon from '../assets/gaucho.png';
 
 interface HeaderProps {
     currentPage: 'home' | 'checklist' | 'search';
@@ -103,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({
                     </div>
                 ) : (
                     <div className="banner-tool-item" onClick={handleSearchPlat}>
-                        <img src="https://ucsbplat.com/static/gaucho.png" alt="Gaucho" style={{ height: '14px' }} />
+                        <img src={gauchoIcon} alt="Gaucho" style={{ height: '14px' }} />
                         PLAT GEs
                     </div>
                 )}

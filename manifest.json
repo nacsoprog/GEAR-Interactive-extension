@@ -26,7 +26,11 @@
   "content_scripts": [
     {
       "matches": [
-        "https://my.sa.ucsb.edu/gold/*"
+        "https://my.sa.ucsb.edu/gold/StudentSchedule.aspx",
+        "https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx",
+        "https://my.sa.ucsb.edu/gold/ResultsFindCourses.aspx",
+        "https://my.sa.ucsb.edu/gold/AcademicProgress.aspx",
+        "https://my.sa.ucsb.edu/gold/CriteriaFindCourses.aspx"
       ],
       "js": [
         "src/content/index.ts"
@@ -38,9 +42,11 @@
     "storage"
   ],
   "host_permissions": [
-    "https://my.sa.ucsb.edu/*",
-    "*://ucsbplat.com/*",
-    "*://www.ucsbplat.com/*"
+    "https://my.sa.ucsb.edu/gold/StudentSchedule.aspx",
+    "https://my.sa.ucsb.edu/gold/BasicFindCourses.aspx",
+    "https://my.sa.ucsb.edu/gold/ResultsFindCourses.aspx",
+    "https://my.sa.ucsb.edu/gold/AcademicProgress.aspx",
+    "https://my.sa.ucsb.edu/gold/CriteriaFindCourses.aspx"
   ],
   "web_accessible_resources": [
     {
@@ -51,5 +57,8 @@
         "https://my.sa.ucsb.edu/*"
       ]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'self'; img-src 'self'"
+  }
 }

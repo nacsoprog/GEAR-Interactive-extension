@@ -1504,28 +1504,8 @@ function App() {
 
     const handleSearchPlat = () => {
         const goldUrl = "https://ucsbplat.com/ge/";
-        if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
-            chrome.tabs.query({ url: "https://ucsbplat.com/ge/" }, (tabs) => {
-                if (tabs && tabs.length > 0) {
-                    const tab = tabs[0];
-                    if (tab.id) {
-                        chrome.tabs.update(tab.id, { url: goldUrl });
-                        chrome.tabs.update(tab.id, { active: true });
-                    }
-                    if (tab.windowId && chrome.windows) {
-                        chrome.windows.update(tab.windowId, { focused: true });
-                    }
-                } else {
-                    chrome.tabs.query({ active: true, currentWindow: true }, (currentTabs) => {
-                        if (currentTabs && currentTabs.length > 0) {
-                            const currentTab = currentTabs[0];
-                            chrome.tabs.create({ url: goldUrl, index: currentTab.index + 1 });
-                        } else {
-                            chrome.tabs.create({ url: goldUrl });
-                        }
-                    });
-                }
-            });
+        if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.create) {
+            chrome.tabs.create({ url: goldUrl });
         } else {
             window.open(goldUrl, "_blank");
         }
