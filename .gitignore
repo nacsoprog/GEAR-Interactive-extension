@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security: Build script (contains local file paths)
+build-secure.sh
+
+# Security: Temporary decrypted keys
+temp-decrypted.pem
+*.pem.tmp
+*-backup.pem
+*-unencrypted.pem
