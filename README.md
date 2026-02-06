@@ -1,8 +1,10 @@
 # GEAR Interactive
 
-**GEAR Interactive** is a Chrome Extension designed to streamline academic planning for UCSB engineering students. It integrates seamlessly with **UCSB GOLD** to provide an interactive course audit, simplified visualization of degree requirements, and intelligent course search capabilities.
+**GEAR Interactive** is a Chrome Extension designed to streamline academic planning for UCSB engineering students. It integrates seamlessly with **UCSB GOLD** to provide an interactive course audit, simplified visualization of degree requirements, and quicker course search capabilities.
 
 While currently optimized for engineering majors, GEAR Interactive includes a "Major not listed" feature to provide value for all UCSB students.
+
+*This extension is not affiliated with UCSB, and should not be used for official academic planning. You should always consult UCSB resources for the most official information.*
 
 ---
 

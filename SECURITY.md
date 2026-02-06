@@ -46,3 +46,8 @@ To ensure the safety of UCSB students' data, GEAR Interactive implements the fol
 - **Local Storage**: Data is stored locally and synced across your devices via Google's secure sync infrastructure. No data is stored on external non-Google servers.
 - **No Analytics**: The extension contains no tracking scripts, analytics, or telemetry.
 - **No Exfiltration**: The extension has no server-side component and makes no network requests to third-party servers.
+
+### 6. CRX Security
+
+- **Private Key**: The private key used to sign the CRX file is stored securely and is not accessible to the public.
+- **No Tampering**: The CRX file is signed with this private key, which ensures that the extension can not be externally tampered with.
