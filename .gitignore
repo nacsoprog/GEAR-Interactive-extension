@@ -31,3 +31,7 @@ temp-decrypted.pem
 *.pem.tmp
 *-backup.pem
 *-unencrypted.pem
+
+# Security: Output files (signed extensions)
+*.crx
+*.zip
