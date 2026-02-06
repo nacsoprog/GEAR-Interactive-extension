@@ -32,9 +32,10 @@
       <p align="center"><em>Interactive degree requirement tracker</em></p>
     </td>
     <td width="50%">
-      <img src="screenshots/ge-search.png" alt="GE Search Integration" />
-      <p align="center"><em>Smart course search with GOLD integration</em></p>
+      <img src="screenshots/timeline-example.png" alt="Major Timeline Example" />
+      <p align="center"><em>View your major's 4-year timeline</em></p>
     </td>
+
   </tr>
 </table>
 
