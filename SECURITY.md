@@ -49,5 +49,5 @@ To ensure the safety of UCSB students' data, GEAR Interactive implements the fol
 
 ### 6. CRX Security
 
-- **Private Key**: The private key used to sign the CRX file is stored securely and is not accessible to the public.
+- **Private Key**: The private key used to sign the CRX file is stored securely and password protected. It is not accessible to the public.
 - **No Tampering**: The CRX file is signed with this private key, which ensures that the extension can not be externally tampered with.
