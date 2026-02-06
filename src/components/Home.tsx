@@ -7,7 +7,7 @@ import { getUnitsForCourse } from '../utils/courseUtils';
 interface HomeProps {
     studentNotes: string;
     setStudentNotes: (val: string) => void;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>;
     manualGrades: Record<string, string>;
     manualUnits: Record<string, number>;
@@ -28,12 +28,8 @@ const Home: React.FC<HomeProps> = ({
     isDarkMode,
     setIsDarkMode
 }) => {
-    // --- State for What-If Sandbox ---
-    // IP courses: identified from checkedItems where grade is "IP" or missing in manualGrades
     const [simulatedGrades, setSimulatedGrades] = useState<Record<string, string>>({});
-    const [ipCourses, setIpCourses] = useState<string[]>([]);
 
-    const [originalGPA, setOriginalGPA] = useState<string>("N/A");
     const [emailTooltip, setEmailTooltip] = useState<string>("Copy");
 
     // Resources Links
@@ -49,14 +45,13 @@ const Home: React.FC<HomeProps> = ({
         { label: "Academic Advising", url: "https://engineering.ucsb.edu/undergraduate/academic-advising" },
     ];
 
-    // Identify IP courses on mount or when dependencies change
-    useEffect(() => {
+    // Identify IP courses (Memoized)
+    const ipCourses = React.useMemo(() => {
         const foundIPs: string[] = [];
         const seenCleanIDs = new Set<string>();
 
         const isIP = (grade: string | undefined) => !grade || grade === "IP" || grade === "";
 
-        // Helper to add if unique
         const addIfUnique = (rawName: string) => {
             const clean = rawName.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
             if (!seenCleanIDs.has(clean)) {
@@ -65,7 +60,7 @@ const Home: React.FC<HomeProps> = ({
             }
         };
 
-        // 1. Check imported history (Format is usually better, e.g. "CMPSC 32")
+        // 1. Check imported history
         if (importedCourseHistory) {
             importedCourseHistory.forEach(c => {
                 if (c.grade === "IP" || !c.grade) {
@@ -74,39 +69,40 @@ const Home: React.FC<HomeProps> = ({
             });
         }
 
-        // 2. Check persistent manual grades (Format might be compacted, e.g. "CMPSC32")
+        // 2. Check persistent manual grades
         Object.keys(manualGrades).forEach(course => {
             if (isIP(manualGrades[course])) {
                 addIfUnique(course);
             }
         });
 
-        // Set IPs
-        setIpCourses(foundIPs);
+        return foundIPs;
+    }, [manualGrades, importedCourseHistory]);
 
+    // Update Simulated Grades map when IP courses change (to preserve edits)
+    useEffect(() => {
         // Initialize simulated grades with "IP" to show no change initially.
         const initialSims: Record<string, string> = {};
-        foundIPs.forEach(c => initialSims[c] = "IP");
+        ipCourses.forEach(c => initialSims[c] = "IP");
 
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSimulatedGrades(prev => {
             // preserve existing simulations if course still exists
             const next = { ...initialSims };
+            // Since we don't have seenCleanIDs here easily unless we reconstruct or memoize it too,
+            // we will just use basic matching for migration preservation.
+            // Re-deriving seenCleanIDs for migration logic:
+            const seenCleanIDs = new Set(ipCourses.map(c => c.replace(/[^a-zA-Z0-9]/g, "").toUpperCase()));
+
             Object.keys(prev).forEach(k => {
-                // Check if k (previous raw name) matches any new clean ID?
-                // Actually, if the raw name changed (e.g. from CMPSC32 to CMPSC 32), we might lose the sim.
-                // But typically user edits one source.
-                // Robust match:
                 const kClean = k.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
                 if (seenCleanIDs.has(kClean)) {
-                    // Find the NEW raw name corresponding to this clean ID to preserve state?
-                    // It's tricky. Let's just key by the current raw names in foundIPs.
-                    if (foundIPs.includes(k)) {
+                    // Try to find exact match
+                    if (ipCourses.includes(k)) {
                         next[k] = prev[k];
                     } else {
-                        // Attempt to migrate state to new raw name?
-                        // e.g. prev had "CMPSC32": "A", now we have "CMPSC 32".
-                        // We should map it.
-                        const newRaw = foundIPs.find(curr => curr.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === kClean);
+                        // Attempt migration
+                        const newRaw = ipCourses.find(curr => curr.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === kClean);
                         if (newRaw) {
                             next[newRaw] = prev[k];
                         }
@@ -116,19 +112,18 @@ const Home: React.FC<HomeProps> = ({
             return next;
         });
 
-    }, [manualGrades, importedCourseHistory]);
+    }, [ipCourses]); // Only run when the list of IP courses changes
 
-    // Calculate GPAs
-    useEffect(() => {
-        // 1. Calculate Original (Current) GPA
-        const { gpa: current } = calculateGPA(
+    // Calculate GPAs (Memoized)
+    const originalGPA = React.useMemo(() => {
+        const { gpa } = calculateGPA(
             importedCourseHistory,
             manualGrades,
             manualUnits,
             courseData
         );
-        setOriginalGPA(current);
-    }, [manualGrades, importedCourseHistory, manualUnits, courseData, simulatedGrades]);
+        return gpa;
+    }, [importedCourseHistory, manualGrades, manualUnits, courseData]);
 
 
     // Refined Calculation Logic for Render

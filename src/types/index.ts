@@ -22,3 +22,23 @@ export type MajorRequirement = {
     prepUnits: number;
     upperUnits: number;
 };
+
+export interface GearState {
+    currentPage?: 'home' | 'checklist' | 'search';
+    selectedCreditSystem?: string;
+    inputCourse?: string;
+    selectedMajor?: string;
+    checkedItems?: ChecklistState;
+    creditSources?: CreditSource;
+    collapsedSections?: ChecklistState;
+    importedCourseHistory?: ImportedCourse[];
+    coursesGOLD?: string[];
+    manualUnits?: { [key: string]: number };
+    showBannerTools?: boolean;
+    addedCourses?: string[];
+    removedCourses?: string[];
+    hasCompletedSetup?: boolean;
+    studentNotes?: string;
+    isDarkMode?: boolean;
+    hasSeenIntroPopup?: boolean;
+}

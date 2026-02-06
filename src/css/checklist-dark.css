@@ -146,10 +146,6 @@ body.dark-mode .checklist-item.checked label {
     color: #bb86fc !important;
 }
 
-body.dark-mode .checklist-item input[type="checkbox"] {
-    accent-color: #bb86fc !important;
-}
-
 body.dark-mode .generic-course-details {
     color: #bb86fc !important;
 }
