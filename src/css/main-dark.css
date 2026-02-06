@@ -97,8 +97,8 @@ body.dark-mode .instructions-bubble.expanded {
 
 body.dark-mode .instructions-bubble.collapsed {
     background-color: #1e1e1e !important;
-    border-color: #bb86fc !important;
-    color: #bb86fc !important;
+    border-color: #ffffff !important;
+    color: #fff !important;
 }
 
 body.dark-mode .close-btn {
@@ -156,7 +156,7 @@ body.dark-mode .card p[style*="color: #777"] {
 }
 
 body.dark-mode .gpa-text {
-    color: #bb86fc !important;
+    color: #fff !important;
 }
 
 body.dark-mode .dashboard-section-title {

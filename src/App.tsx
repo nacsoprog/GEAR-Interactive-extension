@@ -27,7 +27,16 @@ import { gradeMap } from './data/grades';
 
 // --- Types & Utils ---
 import type { ChecklistState, CreditSource, ImportedCourse, GearState } from './types';
-import { getUnitsForCourse, getCourseDetails } from './utils/courseUtils';
+import {
+    getUnitsForCourse,
+    getCourseDetails
+} from './utils/courseUtils';
+import {
+    findMatchingRequirementID,
+    updateGEState
+} from './utils/requirementUtils';
+import { sendImportCommandToGold } from './utils/tabUtils';
+import { mergeImportedData } from './utils/importLogic';
 import mecheTimeline from './assets/meche_timeline.png';
 import csTimeline from './assets/cs_timeline.png';
 import compeTimeline from './assets/compe_timeline.png';
@@ -57,6 +66,12 @@ function App() {
 
     const [selectedSearchFilter, setSelectedSearchFilter] = useState<string | null>(null);
     const [timeRange, setTimeRange] = useState<[number, number]>([8, 23]);
+    const [courseLevel, setCourseLevel] = useState<string>("");
+    const [excludeRestrictions, setExcludeRestrictions] = useState<boolean>(false);
+    const [excludePrerequisites, setExcludePrerequisites] = useState<boolean>(false);
+    const [unitRange, setUnitRange] = useState<[string, string]>(["0", "12"]);
+
+
 
     const [showResetModal, setShowResetModal] = useState(false);
     const [showFloatingInstructions, setShowFloatingInstructions] = useState(false);
@@ -182,7 +197,7 @@ function App() {
 
     // save gearState to chrome storage
     useEffect(() => {
-        // Prevent saving if we haven't finished loading yet (race condition fix)
+        // Prevent saving if loading hasn't finished yet (race condition fix)
         if (!isLoaded) return;
         if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
             const stateToSave = {
@@ -201,7 +216,7 @@ function App() {
                 hasCompletedSetup,
                 studentNotes,
                 isDarkMode,
-                hasSeenIntroPopup: showIntroPopup ? false : true // store true if we aren't showing it anymore
+                hasSeenIntroPopup: showIntroPopup ? false : true // store true if intro is not showing anymore
             };
             chrome.storage.sync.set({ gearState: stateToSave });
         }
@@ -456,153 +471,8 @@ function App() {
             ...addedCourses
         ].filter(Boolean).join(",");
 
-        // find the matching course name in the checklist
-        const findMatchingRequirementID = (cleanInputCode: string) => {
-            const checkList = (list: string[]) => {
-                for (const item of list) {
-                    if (item.startsWith("GROUP:")) {
-                        const group = COURSE_GROUPS[item.split(":")[1]];
-                        for (const opt of group.options) {
-                            for (const c of opt.courses) {
-                                if (c.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === cleanInputCode) return c;
-                            }
-                        }
-                    } else {
-                        if (item.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === cleanInputCode) return item;
-                    }
-                }
-                return null;
-            };
-
-            const prepMatch = checkList(MAJOR_REQUIREMENTS[selectedMajor]?.prep || []);
-            if (prepMatch) return prepMatch;
-            const upperMatch = checkList(MAJOR_REQUIREMENTS[selectedMajor]?.upper || []);
-            if (upperMatch) return upperMatch;
-
-            if (selectedMajor === 'CS') {
-                const sciA = SCIENCE_ELECTIVES["List A"].find(req => req.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === cleanInputCode);
-                if (sciA) return sciA;
-                const sciB = SCIENCE_ELECTIVES["List B"].find(req => req.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === cleanInputCode);
-                if (sciB) return sciB;
-            }
-
-            const electives = UPPER_DIV_ELECTIVES[selectedMajor] || [];
-            const eleMatch = electives.find(req =>
-                req.replace(/[^a-zA-Z0-9]/g, "").toUpperCase() === cleanInputCode
-            );
-            if (eleMatch) return eleMatch;
-            return null;
-        };
-
-        const checkGEsForCourse = (cleanCode: string, sourceLabel: string, isGOLD: boolean = false, isUCSB: boolean = false, isFailing: boolean = false) => {
-            const courseInfo = courseData[cleanCode];
-            if (!courseInfo) return;
-            const areaMapping: { [key: string]: string } = {
-                "A1": "Area A: English Reading & Comprehension-A-1",
-                "A2": "Area A: English Reading & Comprehension-A-2",
-                "D": "Area D: Social Science",
-                "E": "Area E: Culture and Thought",
-                "F": "Area F: The Arts",
-                "G": "Area G: Literature",
-                "Ethnicity": "Special Subject Areas-Ethnicity",
-                "European Traditions": "Special Subject Areas-European Traditions or World Cultures",
-                "World Cultures": "Special Subject Areas-European Traditions or World Cultures"
-            };
-
-            const areas = [...(courseInfo.general_area || []), ...(courseInfo.special_area || [])];
-
-            // Separate overlapping areas (D, E, F, G) from others
-            const coreAreas = areas.filter(a => ["D", "E", "F", "G"].includes(a));
-            const specialAreas = areas.filter(a => !["D", "E", "F", "G"].includes(a));
-
-            let coreAreaFilled = false;
-
-            // Handle Core Areas: Only one can be satisfied
-            for (const area of coreAreas) {
-                if (coreAreaFilled) break; // Stop if we already matched a core area
-
-                const mapKey = areaMapping[area];
-                if (mapKey) {
-                    // New Format: Area D: Social Science-D-1
-                    const c1 = `${mapKey}-${area}-1`;
-                    const c2 = `${mapKey}-${area}-2`;
-
-                    // Helper to check if slot is taken by THIS course
-                    const isMySlot = (sourceVal: string) => {
-                        if (!sourceVal) return false;
-                        const sClean = "".concat(...sourceVal.split(' (')[0].trim().split(/[^a-zA-Z0-9]/g)).toUpperCase();
-                        return sClean === cleanCode;
-                    };
-
-                    if (newSources[c1] === sourceLabel) {
-                        if (isGOLD && !newCoursesGOLD.includes(c1) && !isFailing) newCoursesGOLD.push(c1);
-                        coreAreaFilled = true;
-                    } else if (newSources[c2] === sourceLabel) {
-                        if (isGOLD && !newCoursesGOLD.includes(c2) && !isFailing) newCoursesGOLD.push(c2);
-                        coreAreaFilled = true;
-                    } else {
-                        // Check if we can overwrite c1
-                        if (!newChecks[c1] || (isMySlot(newSources[c1]) && isGOLD && (!newChecks[c1] || !isFailing))) {
-                            if (!isFailing) newChecks[c1] = true;
-                            newSources[c1] = sourceLabel;
-                            if (isGOLD && !newCoursesGOLD.includes(c1) && !isFailing) newCoursesGOLD.push(c1);
-                            coreAreaFilled = true;
-                        } else if (!newChecks[c2] || (isMySlot(newSources[c2]) && isGOLD && (!newChecks[c2] || !isFailing))) {
-                            if (!isFailing) newChecks[c2] = true;
-                            newSources[c2] = sourceLabel;
-                            if (isGOLD && !newCoursesGOLD.includes(c2) && !isFailing) newCoursesGOLD.push(c2);
-                            coreAreaFilled = true;
-                        }
-                    }
-                }
-            }
-
-            // Handle Special Areas (Writing, Ethnicity, etc.) - These can overlap with Core Areas
-            specialAreas.forEach(area => {
-                if (area === "Writing") {
-                    for (let i = 1; i <= 4; i++) {
-                        // New Format: Writing Requirement-Writing-1
-                        const writingId = `Writing Requirement-Writing-${i}`;
-                        if (!isGOLD && newSources[writingId]) continue;
-                        if (newSources[writingId] === sourceLabel) {
-                            if (isGOLD && !newCoursesGOLD.includes(writingId) && isUCSB && !isFailing) newCoursesGOLD.push(writingId);
-                            return;
-                        }
-
-                        if (!newChecks[writingId] && !sourceLabel.includes("CREDIT")) {
-                            if (!isFailing) newChecks[writingId] = true;
-                            newSources[writingId] = sourceLabel;
-                            if (isGOLD && !newCoursesGOLD.includes(writingId) && isUCSB && !isFailing) newCoursesGOLD.push(writingId);
-                            break;
-                        }
-                    }
-                    return;
-                }
-
-                const mapKey = areaMapping[area];
-                if (mapKey) {
-                    if (newSources[mapKey] === sourceLabel) {
-                        if (isGOLD && !newCoursesGOLD.includes(mapKey) && !isFailing) newCoursesGOLD.push(mapKey);
-                    } else if (!newChecks[mapKey]) {
-                        if (!isFailing) newChecks[mapKey] = true;
-                        newSources[mapKey] = sourceLabel;
-                        if (isGOLD && !newCoursesGOLD.includes(mapKey) && !isFailing) newCoursesGOLD.push(mapKey);
-                    }
-                }
-            });
-
-            if (courseInfo.univ_req) {
-                courseInfo.univ_req.forEach((req: string) => {
-                    if (newSources[req] === sourceLabel) {
-                        if (isGOLD && !newCoursesGOLD.includes(req) && !isFailing) newCoursesGOLD.push(req);
-                    } else if (!newChecks[req]) {
-                        if (!isFailing) newChecks[req] = true;
-                        newSources[req] = sourceLabel;
-                        if (isGOLD && !newCoursesGOLD.includes(req) && !isFailing) newCoursesGOLD.push(req);
-                    }
-                });
-            }
-        };
+        // find matching requirement ID replaced by external function call later
+        // checkGEsForCourse replaced by external function call later
 
         // HS Credit Transfer (AP/IB/ALE)
         Object.keys(newChecks).forEach(key => {
@@ -614,7 +484,7 @@ function App() {
                         const code = eq.includes("Social Science") ? "D" : "E";
                         for (let i = 1; i <= 2; i++) {
                             const slotId = `${eq}-${code}-${i}`;
-                            // Fill if empty or if we already own it
+                            // Fill if empty or if already owned
                             if (!newChecks[slotId] || newSources[slotId] === key) {
                                 newChecks[slotId] = true;
                                 newSources[slotId] = key;
@@ -683,7 +553,7 @@ function App() {
                     gradesAcc[cleanCode] = "IP";
                     gradePart = "IP";
                 }
-                const matchedID = findMatchingRequirementID(cleanCode);
+                const matchedID = findMatchingRequirementID(cleanCode, selectedMajor);
 
                 // Moved definition up to use in matchedID block
                 const isFailing = (gradePart === "F" || gradePart === "NP");
@@ -717,7 +587,7 @@ function App() {
                 }
 
                 // Check GEs even if failing (to show label), but pass isFailing=true
-                checkGEsForCourse(cleanCode, labelToUse.toUpperCase(), isGOLD, isUCSB, isFailing);
+                updateGEState(cleanCode, labelToUse.toUpperCase(), courseData[cleanCode], newChecks, newSources, newCoursesGOLD, isGOLD, isFailing);
             });
 
         };
@@ -909,184 +779,56 @@ function App() {
      * Communicates with the Chrome Extension content script to scrape course history from GOLD.
      * Handles conflict resolution between manual inputs and official records.
      */
+    // --- Import Logic ---
     const handleImportFromGOLD = () => {
-        if (typeof chrome === 'undefined' || !chrome.tabs) {
-            alert("This feature only works when running as a Chrome Extension.");
-            return;
-        }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const handleResponse = (response: any) => {
-            if (chrome.runtime.lastError) {
-                console.error("Runtime error (make sure you are logged into GOLD)");
-                setFlashMessage("Make sure you're logged into GOLD. If you are, refresh.");
-                return;
-            }
-            if (response && response.result && response.result.length > 0) {
-
-                const courses: ImportedCourse[] = response.result;
-                const goldCleanCodes = courses.map(c =>
-                    c.code.replace(/[^a-zA-Z0-9]/g, "").toUpperCase()
-                );
-
-
-                let updatedAddedCourses = [...addedCourses];
-                let conflictCount = 0;
-
-                // If an added course is found in GOLD, remove it from addedCourses so GOLD takes precedence
-                updatedAddedCourses = updatedAddedCourses.filter(added => {
-                    // Extract code part (before parens) and normalize
-                    const codePart = added.trim().split('(')[0];
-                    const cleanAdded = codePart.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
-
-                    if (goldCleanCodes.includes(cleanAdded)) {
-
-                        conflictCount++;
-                        return false;
-                    }
-                    return true;
-                });
-
-                if (conflictCount > 0) {
-                    setAddedCourses(updatedAddedCourses);
-
+        sendImportCommandToGold(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (importedData: any[]) => {
+                // SUCCESS CALLBACK
+                if (importedData.length === 0) {
+                    alert('No courses found, make sure to click "Continue" on GOLD.');
+                    return;
                 }
 
-                // 1. Clear Transient Manual Inputs (Keep Persistent) - removed this feature, can be added later if needed
-                const newManualGrades = { ...manualGrades };
-                const newManualUnits = { ...manualUnits };
-
-                // We need to keep only the entries that correspond to updatedAddedCourses
-                const persistentCleanCodes = updatedAddedCourses.map(c =>
-                    c.trim().split('(')[0].replace(/[^a-zA-Z0-9]/g, "").toUpperCase()
+                // Perform the complex merge logic
+                const merged = mergeImportedData(
+                    importedData,
+                    addedCourses,
+                    manualGrades,
+                    manualUnits,
+                    checkedItems,
+                    creditSources,
+                    courseData
                 );
 
-                Object.keys(newManualGrades).forEach(key => {
-                    if (!persistentCleanCodes.includes(key)) {
-                        delete newManualGrades[key];
+                // Batch Update State
+                setAddedCourses(merged.newAddedCourses);
+                setManualGrades(merged.newGrades);
+                setManualUnits(merged.newUnits);
+                setTotalInputCoursesUnits(merged.preservedUnits);
+                setCheckedItems(merged.newChecks);
+                setCreditSources(merged.newSources);
+
+                // Set history (this triggers effects that calculate GPA)
+                setImportedCourseHistory(importedData);
+
+                // Calculate stats for alert
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const totalImportedUnits = importedData.reduce((acc: number, c: any) => {
+                    const g = (c.grade || "").toUpperCase();
+                    if (g !== "F" && g !== "NP" && g !== "W" && g !== "I" && !isNaN(c.units)) {
+                        return acc + c.units;
                     }
-                });
-                Object.keys(newManualUnits).forEach(key => {
-                    if (!persistentCleanCodes.includes(key)) {
-                        delete newManualUnits[key];
-                    }
-                });
-
-                setManualGrades(newManualGrades);
-                setManualUnits(newManualUnits);
-                setInputCourse('');
-                // Recalculate total units for persistent custom courses (Use Preserved Logic)
-                let preservedUnits = 0;
-                persistentCleanCodes.forEach(code => {
-                    // Try to find units in manualUnits or details
-                    if (newManualUnits[code]) {
-                        preservedUnits += newManualUnits[code];
-                    } else {
-                        const details = courseData[code];
-                        if (details && !isNaN(parseFloat(details.units))) {
-                            preservedUnits += parseFloat(details.units);
-                        }
-                    }
-                });
-                setTotalInputCoursesUnits(preservedUnits);
-
-                // 2. Clear Checklist State (keep only HS credits AND persistent courses)
-                const newChecks = { ...checkedItems };
-                const newSources = { ...creditSources };
-
-                Object.keys(newSources).forEach(reqId => {
-                    const source = newSources[reqId];
-                    // Keep HS credits (AP/IB/etc) ONLY if the source exam is still checked
-                    if (CREDIT_TO_UCSB_MAP[source] || Object.keys(CREDIT_SYSTEMS).some(sys => CREDIT_SYSTEMS[sys].includes(source))) {
-                        // Check if the source exam is still in checkedItems (newChecks is initialized from checkedItems)
-                        if (newChecks[source]) {
-                            return;
-                        }
-                        // If we are here, the HS exam was unchecked, so fall through to delete this credit
-                    }
-
-                    // Keep persistent manual courses
-                    const sourceRaw = source.split(' (')[0];
-                    const sourceClean = "".concat(...sourceRaw.trim().split(/[^a-zA-Z0-9]/g)).toUpperCase();
-                    if (persistentCleanCodes.includes(sourceClean)) {
-                        return;
-                    }
-                    // Remove everything else (Manual + old GOLD + Unselected HS)
-                    delete newSources[reqId];
-                    newChecks[reqId] = false;
-                });
-
-                setCheckedItems(newChecks);
-                setCreditSources(newSources);
-
-                // 3. Set Imported History (Effects will trigger GPA calc and Checklist population)
-                setImportedCourseHistory(courses);
-
-                const totalUnitsImported = courses.reduce((total, course) => {
-                    // Only count units if not F/NP/W/I
-                    const g = course.grade.toUpperCase();
-                    if (g !== "F" && g !== "NP" && g !== "W" && g !== "I" && !isNaN(course.units)) {
-                        return total + course.units;
-                    }
-                    return total;
+                    return acc;
                 }, 0);
 
-                alert(`Imported ${courses.length} courses! (${totalUnitsImported} units)`);
+                alert(`Imported ${importedData.length} courses! (${totalImportedUnits} units)`);
                 setActionStatus("");
-
-            } else {
-                alert('No courses found, make sure to click "Continue".');
-                setActionStatus("");
-
+            },
+            (errorMessage) => {
+                setFlashMessage(errorMessage);
             }
-        };
-
-        const targetUrl = "https://my.sa.ucsb.edu/gold/AcademicProgress.aspx";
-
-        chrome.tabs.query({ url: "https://my.sa.ucsb.edu/gold/*" }, (tabs) => {
-            const attemptImport = (tabId: number) => {
-                chrome.tabs.sendMessage(tabId, { action: "IMPORT_COURSES" }, handleResponse);
-            };
-            if (tabs && tabs.length > 0) {
-                const tab = tabs[0];
-                if (tab.id) {
-                    chrome.tabs.update(tab.id, { active: true });
-                    if (tab.windowId && chrome.windows) {
-                        chrome.windows.update(tab.windowId, { focused: true });
-                    }
-                    if (tab.url === targetUrl) {
-                        attemptImport(tab.id);
-                    } else {
-                        chrome.tabs.update(tab.id, { url: targetUrl });
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        const listener = (tabId: number, changeInfo: any) => {
-                            if (tabId === tab.id && changeInfo.status === 'complete') {
-                                chrome.tabs.onUpdated.removeListener(listener);
-                                attemptImport(tabId);
-                            }
-                        };
-                        chrome.tabs.onUpdated.addListener(listener);
-                    }
-                }
-            } else {
-                // No GOLD tab found, create new one to the right
-                chrome.tabs.query({ active: true, currentWindow: true }, (currentTabs) => {
-                    const newIndex = (currentTabs && currentTabs.length > 0) ? currentTabs[0].index + 1 : undefined;
-                    chrome.tabs.create({ url: targetUrl, index: newIndex }, (tab) => {
-                        if (tab.id) {
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            const listener = (tabId: number, changeInfo: any) => {
-                                if (tabId === tab.id && changeInfo.status === 'complete') {
-                                    chrome.tabs.onUpdated.removeListener(listener);
-                                    attemptImport(tabId);
-                                }
-                            };
-                            chrome.tabs.onUpdated.addListener(listener);
-                        }
-                    });
-                });
-            }
-        });
+        );
     };
 
 
@@ -1242,7 +984,7 @@ function App() {
         let foundSlot = null;
 
         for (const sub of subReqs) {
-            // If we are moving to A1 or A2, make sure we pick the right slot
+            // If moving to A1 or A2, make sure to pick the right slot
             if (targetSection.id.includes("Area A")) {
                 if (sub === "A-1" && targetAreaShort !== "A1") continue;
                 if (sub === "A-2" && targetAreaShort !== "A2") continue;
@@ -1348,7 +1090,7 @@ function App() {
             setActionStatus(`${courseName} added (temporary)`);
         }
 
-        // We use inputCourse here to trigger the IMMEDIATE update
+        // Use inputCourse here to trigger the IMMEDIATE update
         // The persistence is handled by addedCourses in FUTURE updates
         applyCreditTransfer(inputCourse);
 
@@ -1461,7 +1203,13 @@ function App() {
                                     action: "AUTOMATE_GOLD_SEARCH",
                                     area: selectedSearchFilter,
                                     startTime: timeRange[0],
-                                    endTime: timeRange[1]
+                                    endTime: timeRange[1],
+                                    courseLevel: courseLevel,
+                                    excludeRestrictions: excludeRestrictions,
+                                    excludePrerequisites: excludePrerequisites,
+                                    unitRange: unitRange
+
+
                                 });
                                 chrome.tabs.onUpdated.removeListener(listener);
                             }
@@ -1487,7 +1235,13 @@ function App() {
                                             action: "AUTOMATE_GOLD_SEARCH",
                                             area: selectedSearchFilter,
                                             startTime: timeRange[0],
-                                            endTime: timeRange[1]
+                                            endTime: timeRange[1],
+                                            courseLevel: courseLevel,
+                                            excludeRestrictions: excludeRestrictions,
+                                            excludePrerequisites: excludePrerequisites,
+                                            unitRange: unitRange
+
+
                                         });
                                         chrome.tabs.onUpdated.removeListener(listener);
                                     }
@@ -1646,7 +1400,17 @@ function App() {
                         setSelectedSearchFilter={setSelectedSearchFilter}
                         timeRange={timeRange}
                         setTimeRange={setTimeRange}
+                        courseLevel={courseLevel}
+                        setCourseLevel={setCourseLevel}
+                        excludeRestrictions={excludeRestrictions}
+                        setExcludeRestrictions={setExcludeRestrictions}
+                        excludePrerequisites={excludePrerequisites}
+                        setExcludePrerequisites={setExcludePrerequisites}
+                        unitRange={unitRange}
+                        setUnitRange={setUnitRange}
+
                         handleSearchGold={handleSearchGold}
+
                         highlightedFilters={highlightedFilters}
                         setHighlightedFilters={setHighlightedFilters}
                     />

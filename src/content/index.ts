@@ -238,6 +238,39 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
             if (request.startTime && startDrop) startDrop.value = (request.startTime * 100).toString();
             if (request.endTime && endDrop) endDrop.value = (request.endTime * 100).toString();
 
+            // Course Level
+            const levelDrop = document.getElementById('pageContent_courseLevelDropDown') as HTMLSelectElement;
+            if (levelDrop && request.courseLevel !== undefined) {
+                levelDrop.value = request.courseLevel;
+                levelDrop.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // Restrictions
+            const restrictionsCheck = document.getElementById('pageContent_noRestrictionsCheckBox') as HTMLInputElement;
+            if (restrictionsCheck && request.excludeRestrictions !== undefined) {
+                restrictionsCheck.checked = request.excludeRestrictions;
+                restrictionsCheck.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // Prerequisites
+            const prereqsCheck = document.getElementById('pageContent_noPrerequisitesCheckBox') as HTMLInputElement;
+            if (prereqsCheck && request.excludePrerequisites !== undefined) {
+                prereqsCheck.checked = request.excludePrerequisites;
+                prereqsCheck.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
+            // Unit Range
+            const unitFrom = document.getElementById('pageContent_unitsFromDropDown') as HTMLSelectElement;
+            const unitTo = document.getElementById('pageContent_unitsToDropDown') as HTMLSelectElement;
+            if (unitFrom && request.unitRange?.[0] !== undefined) {
+                unitFrom.value = request.unitRange[0];
+                unitFrom.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+            if (unitTo && request.unitRange?.[1] !== undefined) {
+                unitTo.value = request.unitRange[1];
+                unitTo.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+
             sendResponse({ success: true });
         } catch (e) {
             sendResponse({ success: false, error: (e as Error).message });
@@ -431,7 +464,7 @@ const init = async () => {
 
         // Observer
         const observer = new MutationObserver(() => {
-            // Only run if we are on a relevant page/state
+            // Only run if on a relevant page/state
             const courseHeaders = document.querySelectorAll('.courseTitle');
             if (courseHeaders.length > 0) {
                 courseHeaders.forEach(processCourseHeader);

@@ -58,9 +58,13 @@ body.dark-mode .note-header {
 /* Helper Text */
 body.dark-mode .course-units,
 body.dark-mode .prereq-toggle,
+body.dark-mode .prereq-toggle-btn,
+body.dark-mode .prereq-text,
 body.dark-mode .sub-req-detail {
     color: #bb86fc !important;
 }
+
+
 
 /* Switch Area Select */
 body.dark-mode .switch-area-select {
@@ -91,8 +95,15 @@ body.dark-mode .credit-source-GOLD {
 }
 
 body.dark-mode .courses-HS {
-    background-color: #1b4d2e !important;
-    color: #a5d6a7 !important;
+    background-color: #025020 !important;
+    color: #6bf66f !important;
+}
+
+body.dark-mode .failing-grade {
+    color: #d04845 !important;
+    background-color: #3e2723 !important;
+    /* Dark red background */
+    border-color: #d04845 !important;
 }
 
 /* Action Bubbles */

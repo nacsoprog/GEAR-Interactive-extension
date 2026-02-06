@@ -42,3 +42,10 @@ export interface GearState {
     isDarkMode?: boolean;
     hasSeenIntroPopup?: boolean;
 }
+
+export type Section = {
+    id: string;
+    label: string;
+    type: string;
+    subReqs?: string[];
+};

@@ -89,8 +89,7 @@ const Home: React.FC<HomeProps> = ({
         setSimulatedGrades(prev => {
             // preserve existing simulations if course still exists
             const next = { ...initialSims };
-            // Since we don't have seenCleanIDs here easily unless we reconstruct or memoize it too,
-            // we will just use basic matching for migration preservation.
+            // Basic matching used for migration preservation
             // Re-deriving seenCleanIDs for migration logic:
             const seenCleanIDs = new Set(ipCourses.map(c => c.replace(/[^a-zA-Z0-9]/g, "").toUpperCase()));
 
@@ -142,7 +141,7 @@ const Home: React.FC<HomeProps> = ({
             }
 
             // 2. Check imported history
-            // We need to match robustly (ignoring spaces) because 'courseRaw' might be "MATH4A" (from manual)
+            // Robust matching required (ignoring spaces) because 'courseRaw' might be "MATH4A" (from manual)
             // but imported might be "MATH 4A".
             const importedIdx = simImportedHistory.findIndex(c => {
                 const cClean = c.code.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
@@ -161,7 +160,7 @@ const Home: React.FC<HomeProps> = ({
                 // Ensure units are valid (default to 4 if missing/0 for typical GE simulation)
                 if (!simImportedHistory[importedIdx].units || simImportedHistory[importedIdx].units === 0) {
                     // Try to find in courseData dynamically
-                    // We use the raw code matching logic from getUnitsForCourse
+                    // Uses the raw code matching logic from getUnitsForCourse
                     const foundUnits = getUnitsForCourse(courseRaw, manualUnits, courseData);
                     simImportedHistory[importedIdx].units = foundUnits > 0 ? foundUnits : 4.0;
                 }

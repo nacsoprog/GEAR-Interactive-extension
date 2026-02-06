@@ -1,8 +1,6 @@
 import React from 'react';
 import gearLogoInline from '../assets/gear_logo_inline.png';
 import { SEARCH_FILTERS } from '../data/geAreas';
-// Wait, SEARCH_FILTERS was imported in App. Where?
-// in App it was imported from './data/searchFilters'? No, let's check App imports.
 
 interface SearchProps {
     unfulfilledFilters: string[];
@@ -10,9 +8,19 @@ interface SearchProps {
     setSelectedSearchFilter: React.Dispatch<React.SetStateAction<string | null>>;
     timeRange: [number, number];
     setTimeRange: React.Dispatch<React.SetStateAction<[number, number]>>;
+    courseLevel: string;
+    setCourseLevel: (val: string) => void;
+    excludeRestrictions: boolean;
+    setExcludeRestrictions: (val: boolean) => void;
+    excludePrerequisites: boolean;
+    setExcludePrerequisites: (val: boolean) => void;
+    unitRange: [string, string];
+
+    setUnitRange: (val: [string, string]) => void;
     handleSearchGold: () => void;
     highlightedFilters?: string[];
     setHighlightedFilters?: React.Dispatch<React.SetStateAction<string[]>>;
+
 }
 
 const Search: React.FC<SearchProps> = ({
@@ -21,9 +29,19 @@ const Search: React.FC<SearchProps> = ({
     setSelectedSearchFilter,
     timeRange,
     setTimeRange,
+    courseLevel,
+    setCourseLevel,
+    excludeRestrictions,
+    setExcludeRestrictions,
+    excludePrerequisites,
+    setExcludePrerequisites,
+    unitRange,
+
+    setUnitRange,
     handleSearchGold,
     highlightedFilters = [],
     setHighlightedFilters
+
 }) => {
     React.useEffect(() => {
         if (highlightedFilters.length > 0 && setHighlightedFilters) {
@@ -60,40 +78,40 @@ const Search: React.FC<SearchProps> = ({
     };
 
     React.useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (!dragging) return;
+        if (!dragging) return;
 
+        const handleMouseMove = (e: MouseEvent) => {
             const newHour = getHourFromPosition(e.clientX);
 
-            if (dragging === 'start') {
-                // Ensure start doesn't exceed end
-                const validStart = Math.min(newHour, timeRange[1]);
-                if (validStart !== timeRange[0]) {
-                    setTimeRange([validStart, timeRange[1]]);
+            setTimeRange((prev) => {
+                const [currentStart, currentEnd] = prev;
+
+                if (dragging === 'start') {
+                    // Clamp: cannot be greater than current End
+                    const validStart = Math.min(newHour, currentEnd);
+                    return [validStart, currentEnd];
+                } else {
+                    // Clamp: cannot be less than current Start
+                    const validEnd = Math.max(newHour, currentStart);
+                    return [currentStart, validEnd];
                 }
-            } else {
-                // Ensure end doesn't go below start
-                const validEnd = Math.max(newHour, timeRange[0]);
-                if (validEnd !== timeRange[1]) {
-                    setTimeRange([timeRange[0], validEnd]);
-                }
-            }
+            });
         };
 
         const handleMouseUp = () => {
             setDragging(null);
         };
 
-        if (dragging) {
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
-        }
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseup', handleMouseUp);
 
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
         };
-    }, [dragging, timeRange, setTimeRange]);
+        // Dependency array NO LONGER includes timeRange!
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dragging, setTimeRange]);
 
     // Calculate percentages for render
     const startPercent = ((timeRange[0] - 8) / 15) * 100;
@@ -135,7 +153,102 @@ const Search: React.FC<SearchProps> = ({
                 ))}
             </div>
 
-            <div className="time-slider-container" style={{ marginTop: '20px', marginBottom: '20px', padding: '0 10px' }}>
+
+
+            {/* New Search Fields: Level, Title, Units */}
+            <div className="search-extra-fields" style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '8px',
+                marginTop: '5px',
+                alignItems: 'flex-end',
+                width: '100%'
+            }}>
+                {/* Col 1: Level (approx 15%) */}
+                <div style={{ flex: '0.6 1 70px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '60px' }}>
+                    <label style={{ fontSize: '0.8em', fontWeight: 'bold', textAlign: 'center' }}>Level</label>
+                    <select
+                        className="search-dropdown"
+                        value={courseLevel}
+                        onChange={(e) => setCourseLevel(e.target.value)}
+                        style={{ fontSize: '1.1em', height: '40px', width: '100%', padding: '8px', borderRadius: '5px', border: '1px solid #ccc', boxSizing: 'border-box' }}
+                    >
+                        <option value="">Any</option>
+                        <option value="U">Ugrad</option>
+                        <option value="UL">Ugrad-LD</option>
+                        <option value="UU">Ugrad-UP</option>
+                        <option value="G">Grad</option>
+                    </select>
+                </div>
+
+                {/* Col 2: No Restrictions/Prerequisites (approx 55%) */}
+                <div style={{ flex: '3 1 200px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '180px' }}>
+                    <label style={{ fontSize: '0.8em', fontWeight: 'bold', textAlign: 'center' }}>No:</label>
+                    <div style={{
+                        display: 'flex',
+                        height: '40px',
+                        width: '100%',
+                        padding: '4px 8px',
+                        borderRadius: '5px',
+                        border: '1px solid #ccc',
+                        boxSizing: 'border-box',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        background: '#ffffff',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 1 }}>
+                            <input
+                                type="checkbox"
+                                id="no-restrictions"
+                                checked={excludeRestrictions}
+                                onChange={(e) => setExcludeRestrictions(e.target.checked)}
+                                style={{ cursor: 'pointer', flexShrink: 0 }}
+                            />
+                            <label htmlFor="no-restrictions" style={{ fontSize: '1.1em', cursor: 'pointer', whiteSpace: 'nowrap' }}>Restrictions</label>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '2px', flexShrink: 1 }}>
+                            <input
+                                type="checkbox"
+                                id="no-prereqs"
+                                checked={excludePrerequisites}
+                                onChange={(e) => setExcludePrerequisites(e.target.checked)}
+                                style={{ cursor: 'pointer', flexShrink: 0 }}
+                            />
+                            <label htmlFor="no-prereqs" style={{ fontSize: '1.1em', cursor: 'pointer', whiteSpace: 'nowrap' }}>Prerequisites</label>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Col 3: Unit range (approx 30%) */}
+                <div style={{ flex: '1.2 1 130px', display: 'flex', flexDirection: 'column', gap: '5px', minWidth: '110px' }}>
+                    <label style={{ fontSize: '0.9em', fontWeight: 'bold', textAlign: 'center' }}>Unit range</label>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', height: '40px' }}>
+                        <select
+                            value={unitRange[0]}
+                            onChange={(e) => setUnitRange([e.target.value, unitRange[1]])}
+                            style={{ fontSize: '1.1em', height: '40px', width: '100%', padding: '2px', borderRadius: '5px', border: '1px solid #ccc', textAlign: 'center', boxSizing: 'border-box' }}
+                        >
+                            {[...Array(12).keys()].map(n => (
+                                <option key={n} value={n.toString()}>{n}</option>
+                            ))}
+                        </select>
+                        <span style={{ fontWeight: 'bold', display: 'flex', alignItems: 'center', height: '100%' }}>-</span>
+                        <select
+                            value={unitRange[1]}
+                            onChange={(e) => setUnitRange([unitRange[0], e.target.value])}
+                            style={{ fontSize: '1.1em', height: '40px', width: '100%', padding: '2px', borderRadius: '5px', border: '1px solid #ccc', textAlign: 'center', boxSizing: 'border-box' }}
+                        >
+                            {[...Array(12).keys()].map(n => (
+                                <option key={n + 1} value={(n + 1).toString()}>{n + 1}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className="time-slider-container" style={{ marginTop: '10px', marginBottom: '10px', padding: '0 10px' }}>
                 <div className="time-labels" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '0.9em', fontWeight: 'bold' }}>
                     <span>Start: {formatTime(timeRange[0])}</span>
                     <span>End: {formatTime(timeRange[1])}</span>
@@ -147,9 +260,7 @@ const Search: React.FC<SearchProps> = ({
                     ref={sliderRef}
                     style={{ position: 'relative', height: '40px' }}
                     onMouseDown={() => {
-                        // Optional: Allow clicking track to jump nearest thumb?
-                        // For now, let's keep it simple: drag thumbs only, or maybe implement basic jump logic later.
-                        // User requested "hitbox for endpoints be physical squares".
+                        // Track click handling reserved for future enhancement
                     }}
                 >
                     {/* Track Background */}
@@ -202,7 +313,7 @@ const Search: React.FC<SearchProps> = ({
             <div style={{ marginTop: '20px' }} className="foot-note">
                 <p>*Note: This will automatically select "Open Sections Only", uncheck this if you want to see all available sections</p>
             </div>
-        </div>
+        </div >
     );
 };
 

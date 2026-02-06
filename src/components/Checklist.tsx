@@ -1,6 +1,6 @@
 import React from 'react';
 
-import type { ChecklistState, CreditSource } from '../types';
+import type { ChecklistState, CreditSource, Section } from '../types';
 import { getUnitsForCourse, getCourseDetails } from '../utils/courseUtils';
 import { GOLD_SUBJECTS } from '../data/goldSubjects';
 import { COURSE_GROUPS } from '../data/courseGroups';
@@ -10,6 +10,9 @@ import { GE_AREAS, ALL_SECTIONS } from '../data/geAreas';
 import { CREDIT_TO_UCSB_MAP } from '../data/HighSchoolCredit';
 import { ALL_UNITS } from '../data/creditSystems';
 import type { ImportedCourse } from '../types';
+
+import { CourseItem } from './CourseItem';
+import { getSectionStatus } from '../utils/requirementUtils';
 
 interface ChecklistProps {
     selectedMajor: string;
@@ -24,7 +27,7 @@ interface ChecklistProps {
     handleReload: () => void;
     isReloading: boolean;
     manualUnits: Record<string, number>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     courseData: Record<string, any>;
     setSliderConfig: (config: { min: number, max: number, current: number } | null) => void;
     sliderConfig: { min: number, max: number, current: number } | null;
@@ -61,6 +64,7 @@ interface ChecklistProps {
 }
 
 const Checklist: React.FC<ChecklistProps> = ({
+    // ... (props destructuring remains)
     selectedMajor,
     checkedItems,
     handleCheckToggle,
@@ -106,107 +110,33 @@ const Checklist: React.FC<ChecklistProps> = ({
     importedCourseHistory,
     addedCourses
 }) => {
+    // ... (state and effect definitions remain)
     const [historyIndex, setHistoryIndex] = React.useState(-1);
-    // State for email tooltip
     const [emailTooltip, setEmailTooltip] = React.useState("Copy");
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const incompleteSections: any[] = [];
+    const incompleteSections: Section[] = [];
+    const completeSections: Section[] = [];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const completeSections: any[] = [];
-
-    // Effect to handle scrolling and highlighting
+    // Effect to handle scrolling
     React.useEffect(() => {
         if (highlightedCourse) {
             const cleanCourseName = highlightedCourse.replace(/\s+/g, '');
             const element = document.getElementById(`course-${cleanCourseName}`);
 
             if (element) {
-                // Scroll to element
                 element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-                // Add highlight class
                 const isDarkMode = document.body.classList.contains('dark-mode');
                 const highlightClass = isDarkMode ? 'flash-highlight-dark' : 'flash-highlight';
                 element.classList.add(highlightClass);
-
-                // Remove highlight after animation
                 const timer = setTimeout(() => {
                     element.classList.remove(highlightClass);
                     setHighlightedCourse(null);
                 }, 2200);
-
                 return () => clearTimeout(timer);
-            } else {
-                // No action needed
             }
         }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [highlightedCourse]);
+    }, [highlightedCourse, setHighlightedCourse]);
 
-    // Display unit requirements and progress for relevant groups
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const getSectionStatus = (sec: any) => {
-        if (sec.type !== 'electives' && sec.type !== 'sciA' && sec.type !== 'sciB' && sec.type !== 'prep' && sec.type !== 'upper') return "";
-        let reqUnits = 0;
-        let currentUnits = 0;
-        const sumUnits = (list: string[]) => {
-            list.forEach(item => {
-                if (item.startsWith("GROUP:")) {
-                    const groupKey = item.split(":")[1];
-                    const group = COURSE_GROUPS[groupKey];
-                    if (group) {
-                        const activeOption = group.options.find(opt => opt.courses.every(c => checkedItems[c]));
-                        if (activeOption) currentUnits += activeOption.units;
-                    }
-                } else {
-                    if (checkedItems[item]) {
-                        currentUnits += getUnitsForCourse(item, manualUnits, courseData);
-                    }
-                }
-            });
-        };
-
-        if (sec.type === 'prep') {
-            reqUnits = MAJOR_REQUIREMENTS[selectedMajor]?.prepUnits || 0;
-            sumUnits(MAJOR_REQUIREMENTS[selectedMajor]?.prep || []);
-        } else if (sec.type === 'electives') {
-            // logic for special electives
-            const electiveList = UPPER_DIV_ELECTIVES[selectedMajor] || [];
-            sumUnits(electiveList);
-
-            if (selectedMajor === "ChemE") reqUnits = 15;
-            else if (selectedMajor === "MechE") reqUnits = 15;
-            else if (selectedMajor === "EE") {
-                const has153A = checkedItems["ECE 153A"];
-                const has153B = checkedItems["ECE 153B"];
-                reqUnits = (has153A && has153B) ? 32 : 36;
-            }
-            else if (selectedMajor === "CompE") {
-                const has189A = checkedItems["ECE189A"];
-                const has189B = checkedItems["ECE189B"];
-                const has189C = checkedItems["ECE189C"];
-                reqUnits = (has189A && has189B && has189C) ? 36 : 40;
-            } else reqUnits = 56;
-        } else if (sec.type === 'sciA') {
-            reqUnits = 8;
-            sumUnits(SCIENCE_ELECTIVES["List A"]);
-        } else if (sec.type === 'sciB') {
-            reqUnits = 12;
-            sumUnits(SCIENCE_ELECTIVES["List B"]);
-        } else if (sec.type === 'upper') {
-            if (selectedMajor === 'EE') {
-                const has153A = checkedItems["ECE153A"];
-                const has153B = checkedItems["ECE153B"];
-                reqUnits = (has153A && has153B) ? 32 : 28;
-            } else {
-                reqUnits = MAJOR_REQUIREMENTS[selectedMajor]?.upperUnits || 999;
-            }
-            sumUnits(MAJOR_REQUIREMENTS[selectedMajor]?.upper || []);
-        }
-
-        return `(Current: ${currentUnits} / Required: ${reqUnits} Units)`;
-    };
+    // note: getSectionStatus is now imported.
 
     // only CS has science electives
     const validSections = ALL_SECTIONS.filter(sec => {
@@ -247,20 +177,40 @@ const Checklist: React.FC<ChecklistProps> = ({
     };
 
     const handleUnfulfilledClick = (filter: string) => {
+        // ... (function logic same)
         const containerId = filterToSectionId[filter];
         if (containerId) {
-            // Extract original sectionId from the container ID for state updates
             const sectionId = containerId.replace('section-container-', '');
             if (collapsedSections[sectionId]) toggleCollapse(sectionId);
-
             if (sectionId === "univ-req") {
                 setCollapsedNotes(prev => ({ ...prev, [sectionId]: false }));
             }
             setTimeout(() => {
                 const element = document.getElementById(containerId);
-                if (element) {
-                    const y = element.getBoundingClientRect().top + window.scrollY - 180;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
+                const container = document.querySelector('.main-content');
+                if (element && container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    const relativeTop = elementRect.top - containerRect.top;
+                    const containerHeight = container.clientHeight;
+
+                    const isOffScreen = relativeTop < 0 || relativeTop > containerHeight;
+                    // Check if in bottom 25% (and visible)
+                    const isInBottom25 = relativeTop > (containerHeight * 0.75) && relativeTop <= containerHeight;
+
+                    // Note: Element position determined by top edge for simplicity
+                    if (isOffScreen) {
+                        container.scrollTo({
+                            top: container.scrollTop + relativeTop - 150,
+                            behavior: 'smooth'
+                        });
+                    } else if (isInBottom25) {
+                        container.scrollTo({
+                            top: container.scrollTop + relativeTop - (containerHeight * 0.5),
+                            behavior: 'smooth'
+                        });
+                    }
+
                     element.classList.add('flash-highlight');
                     setTimeout(() => {
                         element.classList.remove('flash-highlight');
@@ -271,6 +221,7 @@ const Checklist: React.FC<ChecklistProps> = ({
     };
 
     const handleGEClick = (e: React.MouseEvent, sectionId: string, subReqLabel?: string) => {
+        // ... (function logic same)
         e.preventDefault();
         e.stopPropagation();
 
@@ -289,14 +240,10 @@ const Checklist: React.FC<ChecklistProps> = ({
             "Entry Level Writing": "Entry Level Writing",
             "American History and Institutions": "American H & I"
         };
-
         let filter = "";
-
-        // Direct mapping from subReqLabel (e.g. "A-1", "Ethnicity", "European Traditions or World Cultures")
         if (subReqLabel && mapping[subReqLabel]) {
             filter = mapping[subReqLabel];
         }
-        // Mapping from section type if needed (e.g. "Writing Requirement")
         else if (sectionId.includes("Writing") && mapping["Writing Requirement"]) {
             filter = mapping["Writing Requirement"];
         }
@@ -316,93 +263,8 @@ const Checklist: React.FC<ChecklistProps> = ({
         }
     };
 
-    const renderCourseLink = (courseCode: string) => {
-        return (
-            <span
-                onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setSelectedCourse(courseCode);
-                }}
-                style={{ color: 'inherit', cursor: 'pointer' }}
-                className="course-link"
-            >
-                {courseCode}
-            </span>
-        );
-    };
-
-    // render units and prerequisites for courses
-    const renderCourseItem = (course: string, options?: { allowRemoval?: boolean, allowRestore?: boolean }) => {
-        const details = getCourseDetails(course, courseData);
-        const isChecked = !!checkedItems[course];
-
-        const units = (details && !isChecked) ? <span className="course-units">  {details.units}u</span> : "";
-
-        // Prerequisite logic
-        const hasPrereq = details && details.prerequisites !== "N/A";
-        const isPrereqExpanded = expandedPrereqs[course];
-
-        const prereqToggle = (hasPrereq && !isChecked) ? (
-            <span
-                onClick={(e) => {
-                    e.preventDefault();
-                    setExpandedPrereqs(prev => ({ ...prev, [course]: !prev[course] }));
-                }}
-                className="prereq-toggle"
-            >
-                {isPrereqExpanded ? "Prereq:" : "Prereq"}
-            </span>
-        ) : null;
-
-        const prereqText = (hasPrereq && !isChecked && isPrereqExpanded) ? ` ${details.prerequisites}` : "";
-
-        // If allowRemoval is true and course IS removed, don't render it here
-        if (options?.allowRemoval && removedCourses.includes(course)) {
-            return null;
-        }
-
-        const showRemove = options?.allowRemoval && !removedCourses.includes(course);
-        const showRestore = options?.allowRestore;
-
-        const sourceLabel = creditSources[course];
-        // Major validation: C or higher required. Fail if C-, D, F, NP, P
-        const majorFails = ["(C-)", "(D+)", "(D)", "(D-)", "(F)", "(NP)", "(P)"];
-        const isFailing = sourceLabel && majorFails.some(fail => sourceLabel.includes(fail));
-        const sourceBaseClass = coursesGOLD.includes(course) ? "credit-source-GOLD" : (CREDIT_TO_UCSB_MAP[sourceLabel] ? "courses-HS" : "credit-source");
-        const sourceClass = isFailing ? `${sourceBaseClass} failing-grade` : sourceBaseClass;
-
-        return (
-            <li key={course} id={`course-${course.replace(/\s+/g, '')}`} style={{ position: 'relative' }}>
-                <input type="checkbox" id={course} checked={isChecked} onChange={() => handleCheckToggle(course)} />
-                <label htmlFor={course}>
-                    {renderCourseLink(course)} <span style={{ fontSize: '0.8em', color: '#555' }}>
-                        {units}
-                        {prereqToggle}
-                        {prereqText}
-                    </span>
-                    {sourceLabel && <span className={sourceClass}> {sourceLabel}</span>}
-                </label>
-                {showRemove && (
-                    <div
-                        className="remove-course-btn"
-                        onClick={(e) => { e.preventDefault(); handleToggleRemoved(course); }}
-                        title="Remove course"
-                    >
-                        −
-                    </div>
-                )}
-                {showRestore && (
-                    <div
-                        className="restore-course-btn"
-                        onClick={(e) => { e.preventDefault(); handleToggleRemoved(course); }}
-                        title="Restore course"
-                    >
-                        +
-                    </div>
-                )}
-            </li>
-        );
+    const onCourseLinkClick = (courseCode: string) => {
+        setSelectedCourse(courseCode);
     };
 
     // render groups
@@ -412,7 +274,6 @@ const Checklist: React.FC<ChecklistProps> = ({
 
         const removeId = `GROUP:${groupKey}`;
 
-        // If allowRemoval is true and group IS removed, don't render it here
         if (options?.allowRemoval && removedCourses.includes(removeId)) {
             return null;
         }
@@ -436,7 +297,8 @@ const Checklist: React.FC<ChecklistProps> = ({
                         <div key={idx} style={{
                             textDecoration: isOtherOptionComplete ? 'line-through' : 'none',
                             color: isOtherOptionComplete ? '#aaa' : 'inherit',
-                            marginBottom: '4px'
+                            marginBottom: '4px',
+                            width: '100%'
                         }}>
                             <span style={{ fontSize: '0.9em' }}>Option {idx + 1}: {opt.units} units</span>
                             <div style={{ marginLeft: '5px' }}>
@@ -448,8 +310,21 @@ const Checklist: React.FC<ChecklistProps> = ({
                                             checked={!!checkedItems[c]}
                                             onChange={() => handleCheckToggle(c)}
                                             disabled={isOtherOptionComplete}
+                                            style={{ marginRight: '6px' }}
                                         />
-                                        <label htmlFor={c}>{renderCourseLink(c)}</label>
+                                        <label htmlFor={c}>
+                                            <span
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setSelectedCourse(c);
+                                                }}
+                                                className="course-link click-target"
+                                                style={{ color: 'inherit', cursor: 'pointer' }}
+                                            >
+                                                {c}
+                                            </span>
+                                        </label>
                                     </div>
                                 ))}
                             </div>
@@ -461,7 +336,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                         className="remove-course-btn"
                         onClick={(e) => { e.preventDefault(); handleToggleRemoved(removeId); }}
                         title="Remove group"
-                        style={{ top: '15px' }}
+                        style={{ top: '12px' }}
                     >
                         −
                     </div>
@@ -471,7 +346,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                         className="restore-course-btn"
                         onClick={(e) => { e.preventDefault(); handleToggleRemoved(removeId); }}
                         title="Restore group"
-                        style={{ top: '15px' }}
+                        style={{ top: '12px' }}
                     >
                         +
                     </div>
@@ -516,9 +391,6 @@ const Checklist: React.FC<ChecklistProps> = ({
                                         }
                                     } else if (section.type === 'ge') {
                                         if (section.subReqs && section.subReqs.some((sub: string) => `${section.id}-${sub}`.replace(/\s+/g, '').toUpperCase().includes(searchName))) {
-                                            // This might be too loose for partial matches, but let's stick to exact or close exact
-                                            // The subReqs are like "A-1", "A-2". 
-                                            // If user types "A1", we should match "A-1".
                                             if (section.subReqs.some((sub: string) => {
                                                 const fullId = `${section.id}-${sub}`;
                                                 return fullId.replace(/\s+/g, '').toUpperCase().includes(searchName) || sub.replace(/\s+/g, '').toUpperCase() === searchName;
@@ -529,7 +401,6 @@ const Checklist: React.FC<ChecklistProps> = ({
                                     } else if (section.type === 'prep') {
                                         const rawList = MAJOR_REQUIREMENTS[selectedMajor]?.prep || [];
                                         if (rawList.some((c: string) => c.replace(/\s+/g, '') === searchName)) sectionHasCourse = true;
-                                        // Check groups
                                         rawList.forEach((item: string) => {
                                             if (item.startsWith("GROUP:")) {
                                                 const groupKey = item.split(":")[1];
@@ -735,7 +606,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                                 <li key={`gold-${idx}`} className="nested-section" style={{ display: 'block', padding: '10px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div>
-                                            {renderCourseLink(course.code)}
+                                            <span onClick={() => setSelectedCourse(course.code)} className="course-link click-target">{course.code}</span>
                                             <span style={{ fontWeight: 'bold', marginLeft: '8px' }}>{course.title}</span>
                                         </div>
                                         <div style={{ textAlign: 'right', fontSize: '0.9em' }}>
@@ -768,7 +639,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                                 <li key={`manual-${idx}`} className="nested-section" style={{ display: 'block', padding: '10px' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div>
-                                            {renderCourseLink(cleanCode)}
+                                            <span onClick={() => setSelectedCourse(cleanCode)} className="course-link click-target">{cleanCode}</span>
                                             {title && <span style={{ fontWeight: 'bold', marginLeft: '8px' }}>{title}</span>}
                                         </div>
                                         <div style={{ textAlign: 'right', fontSize: '0.9em', display: 'flex', gap: '5px', alignItems: 'center' }}>
@@ -780,7 +651,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                                                 title="Remove logic depends on selection..." // The standard remove button at top works on input box. Here generic view might need specific remove? 
                                             // Actually, let's look at standard checklist. It has remove buttons.
                                             // handleToggleRemoved is for "Removed Courses" bin.
-                                            // To delete a manual course from addedCourses, we usually verify check logic.
+                                            // Manual course deletion requires verification of check logic
                                             // For now, let's just list them. The top "Remove" button works if you type the name in the box.
                                             >
                                             </div>
@@ -878,7 +749,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                             const collapseId = section.id;
 
                             let children: React.ReactNode[] = [];
-                            const statusText = getSectionStatus(section);
+                            const statusText = getSectionStatus(section, selectedMajor, checkedItems, manualUnits, courseData);
 
                             // section notes
                             let notes: React.ReactNode = null;
@@ -903,11 +774,11 @@ const Checklist: React.FC<ChecklistProps> = ({
                                     ].map((g, i) => (
                                         <div key={i}>
                                             <span style={{ display: 'inline-block', width: '50px' }}>{g[0]}</span>
-                                            <span style={{ display: 'inline-block', width: '90px' }}><strong>{g[1] !== "L1" ? renderCourseLink(g[1]) : g[1]},</strong></span>
-                                            <span><strong>{g[2] !== "L2" ? renderCourseLink(g[2]) : g[2]}</strong></span>
+                                            <span style={{ display: 'inline-block', width: '90px' }}><strong>{g[1] !== "L1" ? <span onClick={() => setSelectedCourse(g[1])} className="course-link click-target">{g[1]}</span> : g[1]},</strong></span>
+                                            <span><strong>{g[2] !== "L2" ? <span onClick={() => setSelectedCourse(g[2])} className="course-link click-target">{g[2]}</span> : g[2]}</strong></span>
                                         </div>
                                     ))}
-                                    ---------------------------------------------------<br />Note: Approval by faculty advisor. Approved electives may change year to year. *<strong>{renderCourseLink("ME W167")}</strong> online version of <strong>{renderCourseLink("ME 167")}</strong>. **Four units maximum from <strong>{renderCourseLink("ME 197")}</strong> and <strong>{renderCourseLink("ME 199")}</strong> combined. ***Max of 1 <strong>TMP</strong> course may be applied</span></li>;
+                                    ---------------------------------------------------<br />Note: Approval by faculty advisor. Approved electives may change year to year. *<strong><span onClick={() => setSelectedCourse("ME W167")} className="course-link click-target">ME W167</span></strong> online version of <strong><span onClick={() => setSelectedCourse("ME 167")} className="course-link click-target">ME 167</span></strong>. **Four units maximum from <strong><span onClick={() => setSelectedCourse("ME 197")} className="course-link click-target">ME 197</span></strong> and <strong><span onClick={() => setSelectedCourse("ME 199")} className="course-link click-target">ME 199</span></strong> combined. ***Max of 1 <strong>TMP</strong> course may be applied</span></li>;
                             }
                             if (section.type === 'sciB') {
                                 notes = <li key="n" className="note"><span className="note-content-detailed-simple">At least 1 lab is required</span></li>;
@@ -987,7 +858,7 @@ const Checklist: React.FC<ChecklistProps> = ({
                                     notes = <li key="n" className="note"><span className="sub-req-detail"><strong>ENGR 101</strong> grants Writing credit! (yay)</span></li>;
                                 }
 
-                                const subReqItems = section.subReqs.map((sub: string) => {
+                                const subReqItems = (section.subReqs || []).map((sub: string) => {
                                     const reqId = `${section.id}-${sub}`;
                                     let labelText: React.ReactNode = sub;
                                     if (section.id === "Area A: English Reading & Comprehension") {
@@ -1021,8 +892,8 @@ const Checklist: React.FC<ChecklistProps> = ({
                                         const cleanCode = sourceLabel.split('(')[0].trim().replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
                                         const details = getCourseDetails(cleanCode, courseData);
 
-                                        // Check if we are currently in a Core GE section (Area D, E, F, G)
-                                        // The ID format is "Area X: ..." so we can check start
+                                        // Check if currently in a Core GE section (Area D, E, F, G)
+                                        // The ID format is "Area X: ..." for identification
                                         const isCoreSection = ["Area D", "Area E", "Area F", "Area G"].some(prefix => section.id.startsWith(prefix));
 
                                         if (isCoreSection && details && details.general_area && Array.isArray(details.general_area) && details.general_area.length > 1) {
@@ -1073,21 +944,96 @@ const Checklist: React.FC<ChecklistProps> = ({
                                 const rawList = MAJOR_REQUIREMENTS[selectedMajor]?.prep || [];
                                 children = rawList.map(item => {
                                     if (item.startsWith("GROUP:")) return renderGroupItem(item.split(":")[1], { allowRemoval: true });
-                                    return renderCourseItem(item, { allowRemoval: true });
+                                    return (
+                                        <CourseItem
+                                            key={item}
+                                            course={item}
+                                            isChecked={!!checkedItems[item]}
+                                            onToggle={handleCheckToggle}
+                                            courseData={courseData}
+                                            onRemove={() => handleToggleRemoved(item)}
+                                            creditSources={creditSources}
+                                            coursesGOLD={coursesGOLD}
+                                            removedCourses={removedCourses}
+                                            isPrereqExpanded={!!expandedPrereqs[item]}
+                                            onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [item]: !prev[item] }))}
+                                            onCourseClick={onCourseLinkClick}
+                                        />
+                                    );
                                 });
                             } else if (section.type === 'upper') {
                                 const rawList = MAJOR_REQUIREMENTS[selectedMajor]?.upper || [];
                                 const courseItems = rawList.map(item => {
                                     if (item.startsWith("GROUP:")) return renderGroupItem(item.split(":")[1], { allowRemoval: true });
-                                    return renderCourseItem(item, { allowRemoval: true });
+                                    return (
+                                        <CourseItem
+                                            key={item}
+                                            course={item}
+                                            isChecked={!!checkedItems[item]}
+                                            onToggle={handleCheckToggle}
+                                            courseData={courseData}
+                                            onRemove={() => handleToggleRemoved(item)}
+                                            creditSources={creditSources}
+                                            coursesGOLD={coursesGOLD}
+                                            removedCourses={removedCourses}
+                                            isPrereqExpanded={!!expandedPrereqs[item]}
+                                            onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [item]: !prev[item] }))}
+                                            onCourseClick={onCourseLinkClick}
+                                        />
+                                    );
                                 });
                                 children = [notes, ...courseItems];
                             } else if (section.type === 'electives') {
-                                children = [notes, ...(UPPER_DIV_ELECTIVES[selectedMajor] || []).map(c => renderCourseItem(c, { allowRemoval: true }))];
+                                children = [notes, ...(UPPER_DIV_ELECTIVES[selectedMajor] || []).map(c => (
+                                    <CourseItem
+                                        key={c}
+                                        course={c}
+                                        isChecked={!!checkedItems[c]}
+                                        onToggle={handleCheckToggle}
+                                        courseData={courseData}
+                                        onRemove={() => handleToggleRemoved(c)}
+                                        creditSources={creditSources}
+                                        coursesGOLD={coursesGOLD}
+                                        removedCourses={removedCourses}
+                                        isPrereqExpanded={!!expandedPrereqs[c]}
+                                        onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [c]: !prev[c] }))}
+                                        onCourseClick={onCourseLinkClick}
+                                    />
+                                ))];
                             } else if (section.type === 'sciA') {
-                                children = SCIENCE_ELECTIVES["List A"].map(c => renderCourseItem(c, { allowRemoval: true }));
+                                children = SCIENCE_ELECTIVES["List A"].map(c => (
+                                    <CourseItem
+                                        key={c}
+                                        course={c}
+                                        isChecked={!!checkedItems[c]}
+                                        onToggle={handleCheckToggle}
+                                        courseData={courseData}
+                                        onRemove={() => handleToggleRemoved(c)}
+                                        creditSources={creditSources}
+                                        coursesGOLD={coursesGOLD}
+                                        removedCourses={removedCourses}
+                                        isPrereqExpanded={!!expandedPrereqs[c]}
+                                        onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [c]: !prev[c] }))}
+                                        onCourseClick={onCourseLinkClick}
+                                    />
+                                ));
                             } else if (section.type === 'sciB') {
-                                children = [notes, ...SCIENCE_ELECTIVES["List B"].map(c => renderCourseItem(c, { allowRemoval: true }))];
+                                children = [notes, ...SCIENCE_ELECTIVES["List B"].map(c => (
+                                    <CourseItem
+                                        key={c}
+                                        course={c}
+                                        isChecked={!!checkedItems[c]}
+                                        onToggle={handleCheckToggle}
+                                        courseData={courseData}
+                                        onRemove={() => handleToggleRemoved(c)}
+                                        creditSources={creditSources}
+                                        coursesGOLD={coursesGOLD}
+                                        removedCourses={removedCourses}
+                                        isPrereqExpanded={!!expandedPrereqs[c]}
+                                        onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [c]: !prev[c] }))}
+                                        onCourseClick={onCourseLinkClick}
+                                    />
+                                ))];
                             }
                             return (
                                 <li className="nested-section" key={section.id} id={`section-container-${section.id}`}>
@@ -1121,7 +1067,22 @@ const Checklist: React.FC<ChecklistProps> = ({
                                         if (c.startsWith("GROUP:")) {
                                             return renderGroupItem(c.split(":")[1], { allowRestore: true });
                                         }
-                                        return renderCourseItem(c, { allowRestore: true });
+                                        return (
+                                            <CourseItem
+                                                key={c}
+                                                course={c}
+                                                isChecked={!!checkedItems[c]}
+                                                onToggle={handleCheckToggle}
+                                                courseData={courseData}
+                                                onRestore={() => handleToggleRemoved(c)}
+                                                creditSources={creditSources}
+                                                coursesGOLD={coursesGOLD}
+                                                removedCourses={removedCourses}
+                                                isPrereqExpanded={!!expandedPrereqs[c]}
+                                                onTogglePrereq={() => setExpandedPrereqs(prev => ({ ...prev, [c]: !prev[c] }))}
+                                                onCourseClick={onCourseLinkClick}
+                                            />
+                                        );
                                     })}
                                 </ul>
                             )}
